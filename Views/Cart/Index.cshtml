@@ -1,0 +1,132 @@
+@model List<WebTraSua.Models.CartItem>
+
+@{
+    ViewData["Title"] = "Giỏ Hàng Của Bạn";
+    decimal totalAmount = ViewBag.TotalAmount ?? 0;
+}
+
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <div>
+            <h2 class="font-serif fw-bold mb-1" style="color: var(--nn-plum-text);">
+                <i class="bi bi-cart3 me-2 text-danger"></i>Giỏ Hàng Của Bạn
+            </h2>
+            <p class="text-secondary small mb-0">Xem lại các món trà sữa đã chọn và tiến hành thanh toán</p>
+        </div>
+        <a asp-controller="Product" asp-action="Index" class="btn btn-sakura-outline">
+            <i class="bi bi-arrow-left me-1"></i> Tiếp tục chọn món
+        </a>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="row g-4">
+            <!-- Bảng giỏ hàng -->
+            <div class="col-lg-8">
+                <div class="card sakura-card">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead style="background-color: var(--nn-soft-pink); color: var(--nn-plum-text);">
+                                <tr>
+                                    <th scope="col" class="py-3 ps-4">Tên món</th>
+                                    <th scope="col" class="py-3 text-center">Đơn giá</th>
+                                    <th scope="col" class="py-3 text-center">Số lượng</th>
+                                    <th scope="col" class="py-3 text-end">Thành tiền</th>
+                                    <th scope="col" class="py-3 text-center pe-4">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td class="ps-4">
+                                            <div class="d-flex align-items-center">
+                                                <img src="@item.ImageUrl" alt="@item.ProductName" class="rounded-4 me-3 shadow-sm border" style="width: 58px; height: 58px; object-fit: cover;"
+                                                     onerror="this.onerror=null; this.src='https://placehold.co/100x100/FBD7DC/4A202A?text=Tea';" />
+                                                <div>
+                                                    <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId" 
+                                                       class="fw-bold text-decoration-none" style="color: var(--nn-plum-text);">
+                                                        @item.ProductName
+                                                    </a>
+                                                    <div class="small text-muted">Trà sữa tươi chuẩn vị</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center fw-semibold">
+                                            @item.Price.ToString("N0") đ
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-white text-dark border px-3 py-2 fs-6 rounded-pill">@item.Quantity</span>
+                                        </td>
+                                        <td class="text-end fw-bold sakura-price fs-5">
+                                            @item.TotalPrice.ToString("N0") đ
+                                        </td>
+                                        <td class="text-center pe-4">
+                                            <!-- Nút gỡ bỏ từng món -->
+                                            <a asp-controller="Cart" asp-action="RemoveFromCart" asp-route-id="@item.ProductId" 
+                                               class="btn btn-outline-danger btn-sm rounded-pill px-3" title="Gỡ món này khỏi giỏ">
+                                                <i class="bi bi-trash3 me-1"></i>Gỡ bỏ
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tóm tắt đơn hàng & Checkout -->
+            <div class="col-lg-4">
+                <div class="card sakura-card p-4">
+                    <h5 class="font-serif fw-bold mb-3 border-bottom pb-2" style="color: var(--nn-plum-text);">
+                        Tóm Tắt Đơn Hàng
+                    </h5>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-secondary">Số lượng ly:</span>
+                        <span class="fw-bold">@Model.Sum(x => x.Quantity) ly</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-secondary">Phí giao hàng:</span>
+                        <span class="text-success fw-bold">Miễn phí</span>
+                    </div>
+
+                    <hr />
+
+                    <!-- Tổng tiền giỏ hàng -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="fs-5 fw-bold" style="color: var(--nn-plum-text);">Tổng thanh toán:</span>
+                        <span class="display-6 fw-bold sakura-price">@totalAmount.ToString("N0") đ</span>
+                    </div>
+
+                    <!-- Nút hành động: "Tiến hành thanh toán" -->
+                    <form asp-controller="Cart" asp-action="Checkout" method="post">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-sakura-primary w-100 py-3 fs-5">
+                            <i class="bi bi-credit-card me-2"></i>Tiến hành thanh toán
+                        </button>
+                    </form>
+
+                    <div class="mt-3 text-center small text-muted">
+                        <i class="bi bi-shield-check text-success me-1"></i>Thanh toán an toàn, bảo mật cùng TN Tea
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card sakura-card p-5 text-center my-4">
+            <div class="my-4">
+                <i class="bi bi-cup-hot text-muted" style="font-size: 4.5rem; color: var(--nn-primary-pink) !important;"></i>
+                <h3 class="font-serif fw-bold mt-3" style="color: var(--nn-plum-text);">Giỏ hàng đang trống</h3>
+                <p class="text-secondary">Chưa có ly trà sữa nào được thêm. Hãy chọn một ly trà sữa thơm ngon nhé!</p>
+                <a asp-controller="Product" asp-action="Index" class="btn btn-sakura-primary px-4 py-2 mt-2">
+                    <i class="bi bi-cup-straw me-1"></i> Khám phá menu ngay
+                </a>
+            </div>
+        </div>
+    }
+</div>

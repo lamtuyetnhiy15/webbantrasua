@@ -1,0 +1,155 @@
+@model IEnumerable<WebTraSua.Models.Order>
+
+@{
+    ViewData["Title"] = "Trang Quản Trị Hệ Thống - TN Tea";
+}
+
+<div class="container my-5">
+    <!-- Header Quản Trị -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-3 border-bottom">
+        <div>
+            <span class="badge rounded-pill px-3 py-1 mb-2" style="background-color: #FDE8EA; color: #D25C70; font-weight: 700; font-size: 0.75rem; letter-spacing: 1.5px;">
+                BẢNG ĐIỀU KHIỂN HỆ THỐNG
+            </span>
+            <h2 class="font-serif fw-bold mb-0" style="color: #4A202A; font-family: 'Playfair Display', Georgia, serif;">
+                Quản Trị TN Tea
+            </h2>
+            <p class="text-secondary small mb-0">Xin chào Quản Trị Viên! Dưới đây là dữ liệu tổng hợp hoạt động của hệ thống.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="Products" class="btn btn-outline-danger rounded-pill px-3 py-2 fw-semibold">
+                <i class="bi bi-cup-hot me-1"></i> Quản lý Món
+            </a>
+            <a asp-action="Orders" class="btn btn-outline-danger rounded-pill px-3 py-2 fw-semibold">
+                <i class="bi bi-receipt me-1"></i> Quản lý Đơn hàng
+            </a>
+        </div>
+    </div>
+
+    <!-- 4 Khối Thống Kê (Metric Cards) -->
+    <div class="row g-4 mb-5">
+        <!-- Doanh thu -->
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4 h-100" style="background: linear-gradient(135deg, #FFF 0%, #FFF5F7 100%); border-left: 5px solid #EE8698 !important;">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted small fw-semibold">TỔNG DOANH THU</span>
+                    <div class="rounded-circle p-2" style="background: #FDE8EA; color: #EE8698;">
+                        <i class="bi bi-cash-stack fs-5"></i>
+                    </div>
+                </div>
+                <div class="admin-metric-value mb-1" style="color: #E24A6F;">
+                    @(((decimal)(ViewBag.TotalRevenue ?? 0)).ToString("N0")) đ
+                </div>
+                <small class="text-muted"><i class="bi bi-arrow-up-right text-success me-1"></i>Từ tất cả hóa đơn</small>
+            </div>
+        </div>
+
+        <!-- Tổng Đơn Hàng -->
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4 h-100" style="background: linear-gradient(135deg, #FFF 0%, #F5F7FF 100%); border-left: 5px solid #6C5CE7 !important;">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted small fw-semibold">TỔNG ĐƠN HÀNG</span>
+                    <div class="rounded-circle p-2" style="background: #EDE9FE; color: #6C5CE7;">
+                        <i class="bi bi-bag-check fs-5"></i>
+                    </div>
+                </div>
+                <div class="admin-metric-value mb-1" style="color: #6C5CE7;">
+                    @(ViewBag.TotalOrders ?? 0)
+                </div>
+                <small class="text-muted">Đơn hàng đã đặt</small>
+            </div>
+        </div>
+
+        <!-- Tổng Sản Phẩm -->
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4 h-100" style="background: linear-gradient(135deg, #FFF 0%, #F6FFF8 100%); border-left: 5px solid #00B894 !important;">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted small fw-semibold">MENU SẢN PHẨM</span>
+                    <div class="rounded-circle p-2" style="background: #E6FBF5; color: #00B894;">
+                        <i class="bi bi-cup-straw fs-5"></i>
+                    </div>
+                </div>
+                <div class="admin-metric-value mb-1" style="color: #00B894;">
+                    @(ViewBag.TotalProducts ?? 0)
+                </div>
+                <small class="text-muted">Món trà sữa đang mở</small>
+            </div>
+        </div>
+
+        <!-- Tổng Khách Hàng -->
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4 h-100" style="background: linear-gradient(135deg, #FFF 0%, #FFFDF5 100%); border-left: 5px solid #FDCB6E !important;">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted small fw-semibold">NGƯỜI DÙNG</span>
+                    <div class="rounded-circle p-2" style="background: #FEF8E7; color: #E17055;">
+                        <i class="bi bi-people fs-5"></i>
+                    </div>
+                </div>
+                <div class="admin-metric-value mb-1" style="color: #E17055;">
+                    @(ViewBag.TotalUsers ?? 0)
+                </div>
+                <small class="text-muted">Tài khoản thành viên</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bảng 5 Đơn Hàng Mới Nhất -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4" style="border: 1px solid rgba(244, 166, 178, 0.35) !important;">
+        <div class="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center border-bottom">
+            <h5 class="fw-bold mb-0" style="color: #4A202A;">
+                <i class="bi bi-clock-history text-danger me-2"></i>Đơn Hàng Mới Nhất
+            </h5>
+            <a asp-action="Orders" class="btn btn-sm text-decoration-none fw-semibold" style="color: #EE8698;">
+                Xem tất cả đơn hàng →
+            </a>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead style="background-color: #FFF8F9; color: #4A202A; font-size: 0.85rem;">
+                    <tr>
+                        <th class="ps-4">MÃ ĐƠN</th>
+                        <th>KHÁCH HÀNG</th>
+                        <th>NGÀY ĐẶT</th>
+                        <th>SỐ MÓN</th>
+                        <th>TỔNG TIỀN</th>
+                        <th class="text-end pe-4">THAO TÁC</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var order in Model)
+                        {
+                            <tr>
+                                <td class="ps-4 fw-bold" style="color: #EE8698;">#@order.OrderId</td>
+                                <td>
+                                    <div class="fw-semibold">@(order.User?.FullName ?? "Khách vãng lai")</div>
+                                    <small class="text-muted">@(order.User?.Email ?? "N/A")</small>
+                                </td>
+                                <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>
+                                    <span class="badge bg-light text-dark border">
+                                        @order.OrderDetails.Sum(od => od.Quantity) ly
+                                    </span>
+                                </td>
+                                <td class="fw-bold text-danger">@order.TotalAmount.ToString("N0") đ</td>
+                                <td class="text-end pe-4">
+                                    <a asp-controller="Order" asp-action="Invoice" asp-route-id="@order.OrderId" 
+                                       class="btn btn-sm rounded-pill px-3 btn-outline-danger">
+                                        <i class="bi bi-eye me-1"></i> Xem hóa đơn
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">Chưa có đơn hàng nào trong hệ thống.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

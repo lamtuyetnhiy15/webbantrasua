@@ -1,0 +1,84 @@
+@model IEnumerable<WebTraSua.Models.Order>
+
+@{
+    ViewData["Title"] = "Quản Lý Đơn Hàng - TN Tea";
+}
+
+<div class="container my-5">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-3 border-bottom">
+        <div>
+            <span class="badge rounded-pill px-3 py-1 mb-2" style="background-color: #FDE8EA; color: #D25C70; font-weight: 700; font-size: 0.75rem; letter-spacing: 1.5px;">
+                QUẢN LÝ BÁN HÀNG
+            </span>
+            <h2 class="font-serif fw-bold mb-0" style="color: #4A202A; font-family: 'Playfair Display', Georgia, serif;">
+                Quản Lý Đơn Hàng & Hóa Đơn
+            </h2>
+            <p class="text-secondary small mb-0">Theo dõi toàn bộ đơn hàng của khách hàng mua tại TN Tea</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            <!-- Quản lý Món: Dạng viền -->
+            <a asp-action="Products" class="btn btn-outline-danger rounded-pill px-3 py-2 fw-semibold">
+                <i class="bi bi-cup-hot me-1"></i> Quản lý Món
+            </a>
+            <!-- Quản lý Đơn hàng: Đang ở trang này -> Tô đậm nền hồng -->
+            <a asp-action="Orders" class="btn text-white rounded-pill px-3 py-2 fw-semibold shadow-sm" style="background: #EE8698;">
+                <i class="bi bi-receipt me-1"></i> Quản lý Đơn hàng
+            </a>
+            <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-3 py-2 fw-semibold">
+                <i class="bi bi-speedometer2 me-1"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="border: 1px solid rgba(244, 166, 178, 0.35) !important;">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead style="background-color: #FFF8F9; color: #4A202A; font-size: 0.85rem;">
+                    <tr>
+                        <th class="ps-4">MÃ HÓA ĐƠN</th>
+                        <th>KHÁCH HÀNG</th>
+                        <th>SỐ ĐIỆN THOẠI</th>
+                        <th>NGÀY ĐẶT</th>
+                        <th>CHI TIẾT MÓN</th>
+                        <th>TỔNG TIỀN</th>
+                        <th class="text-end pe-4">THAO TÁC</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var o in Model)
+                        {
+                            <tr>
+                                <td class="ps-4 fw-bold" style="color: #EE8698;">#@o.OrderId</td>
+                                <td>
+                                    <div class="fw-bold" style="color: #4A202A;">@(o.User?.FullName ?? "Khách vãng lai")</div>
+                                    <small class="text-muted">@(o.User?.Email ?? "N/A")</small>
+                                </td>
+                                <td>@(o.User?.PhoneNumber ?? "Chưa cập nhật")</td>
+                                <td>@o.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>
+                                    <small class="text-secondary">
+                                        @string.Join(", ", o.OrderDetails.Select(od => $"{od.Product?.Name ?? "Món"} x{od.Quantity}"))
+                                    </small>
+                                </td>
+                                <td class="fw-bold text-danger">@o.TotalAmount.ToString("N0") đ</td>
+                                <td class="text-end pe-4">
+                                    <a asp-controller="Order" asp-action="Invoice" asp-route-id="@o.OrderId" class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                                        <i class="bi bi-receipt me-1"></i> Mở Hóa Đơn
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">Chưa có đơn hàng nào.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

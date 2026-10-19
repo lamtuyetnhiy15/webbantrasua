@@ -1,0 +1,226 @@
+@model WebTraSua.Models.BrandStoryViewModel
+
+@{
+    ViewData["Title"] = "Chuyện TN Tea - Hành Trình Trà Sữa Đậm Hương";
+}
+
+<!-- HERO BANNER TRANG CHUYỆN TN TEA -->
+<div class="story-hero-section position-relative overflow-hidden mb-4">
+    <div class="container py-4 text-center position-relative" style="z-index: 2;">
+        <span class="badge rounded-pill px-3 py-1 text-uppercase mb-2" style="background-color: var(--nn-soft-pink); color: var(--nn-deep-rose); font-weight: 700; font-size: 0.75rem; letter-spacing: 1.5px;">
+            @Model.HeroBadge
+        </span>
+        <h1 class="display-6 font-serif fw-bold mb-2" style="color: var(--nn-plum-text);">@Model.HeroTitle</h1>
+        <div class="sakura-divider"></div>
+        <p class="text-secondary mx-auto mb-0" style="max-width: 650px; font-size: 0.95rem; line-height: 1.7;">
+            @Model.HeroSubtitle
+        </p>
+    </div>
+</div>
+
+<div class="container my-5">
+    <!-- KHỐI 1: KHỞI NGUỒN CẢM HỨNG -->
+    <div class="row align-items-center g-5 mb-5 pb-3">
+        <div class="col-lg-6">
+            <div class="position-relative">
+                <img src="~/images/ch.jpg" asp-append-version="true" alt="TN Tea Story" class="img-fluid rounded-4 shadow-lg w-100" style="object-fit: cover; max-height: 420px; border: 3px solid rgba(244, 166, 178, 0.4);" />
+                <div class="position-absolute bottom-0 start-0 m-3 p-3 rounded-3 shadow" style="background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(8px); max-width: 260px;">
+                    <div class="fw-bold" style="color: var(--nn-deep-rose);">
+                        <i class="bi bi-heart-fill me-1"></i> Tinh Hoa Nghệ Nhân
+                    </div>
+                    <small class="text-secondary">Pha chế thủ công tỉ mỉ từng mẻ trà mỗi sớm mai</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <span class="badge rounded-pill px-3 py-1 text-uppercase mb-2" style="background-color: var(--nn-soft-pink); color: var(--nn-deep-rose); font-weight: 700; font-size: 0.75rem; letter-spacing: 1px;">
+                Hương Vị Độc Bản
+            </span>
+            <h2 class="font-serif fw-bold mb-3" style="color: var(--nn-plum-text);">Nơi Hương Trà Giao Hòa Cùng Sắc Hoa</h2>
+            <p class="text-secondary" style="line-height: 1.9;">
+                Tại <strong>TN Tea</strong>, chúng tôi tin rằng một ly trà sữa ngon không chỉ đơn thuần để giải khát, mà còn là một trải nghiệm đánh thức mọi giác quan. Từng giọt trà là sự hòa quyện tinh tế giữa vị chát dịu thanh tao của búp trà tươi, hương thơm dịu nhẹ của hoa anh đào Sakura, hoa nhài thanh khiết cùng vị béo ngậy êm dịu từ sữa tươi thanh trùng.
+            </p>
+            <p class="text-secondary" style="line-height: 1.9;">
+                Mỗi công thức tại TN Tea đều được cân chỉnh tỉ mỉ để giữ trọn vẹn hậu vị trà sâu lắng, không gắt ngọt, tôn vinh nét văn hóa thưởng trà tao nhã của người Á Đông kết hợp phong cách hiện đại.
+            </p>
+        </div>
+    </div>
+
+    <!-- KHỐI 2: 3 GIÁ TRỊ CỐT LÕI -->
+    <div class="text-center mb-5">
+        <span class="badge rounded-pill px-3 py-1 text-uppercase mb-2" style="background-color: var(--nn-soft-pink); color: var(--nn-deep-rose); font-weight: 700; font-size: 0.75rem; letter-spacing: 1px;">
+            Cam Kết Vàng
+        </span>
+        <h2 class="display-6 font-serif fw-bold" style="color: var(--nn-plum-text);">Giá Trị Tạo Nên Khác Biệt</h2>
+        <div class="sakura-divider"></div>
+    </div>
+
+    <div class="row g-4 mb-5 pb-4">
+        <div class="col-md-4">
+            <div class="card h-100 border-0 rounded-4 shadow-sm p-4 text-center story-value-card">
+                <div class="value-icon-wrapper mx-auto mb-3">
+                    <img src="~/images/story-hoa-tinh-khiet.png" alt="Hoa Tinh Khiết Tự Nhiên" class="story-value-img" />
+                </div>
+                <h4 class="font-serif fw-bold mb-2" style="color: var(--nn-plum-text);">Hoa Tinh Khiết Tự Nhiên</h4>
+                <p class="text-secondary small mb-0" style="line-height: 1.8;">
+                    Ướp hương hoa tự nhiên 100%, nói không với phẩm màu và hương liệu nhân tạo, lưu giữ trọn vẹn hương thơm nguyên bản của thiên nhiên.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 border-0 rounded-4 shadow-sm p-4 text-center story-value-card">
+                <div class="value-icon-wrapper mx-auto mb-3">
+                    <img src="~/images/story-la-tra-thuong-hang.png" alt="Lá Trà Thượng Hạng" class="story-value-img" />
+                </div>
+                <h4 class="font-serif fw-bold mb-2" style="color: var(--nn-plum-text);">Lá Trà Thượng Hạng</h4>
+                <p class="text-secondary small mb-0" style="line-height: 1.8;">
+                    Tuyển chọn búp trà Oolong sao nướng thủ công, Trà đen Assam đượm khói và Bột Matcha Uji chuẩn Nhật Bản được thu hoạch đúng vụ.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 border-0 rounded-4 shadow-sm p-4 text-center story-value-card">
+                <div class="value-icon-wrapper mx-auto mb-3">
+                    <img src="~/images/story-tran-chau-nau-moi.png" alt="Trân Châu Nấu Mới Mỗi Ngày" class="story-value-img" />
+                </div>
+                <h4 class="font-serif fw-bold mb-2" style="color: var(--nn-plum-text);">Trân Châu Nấu Mới Mỗi Ngày</h4>
+                <p class="text-secondary small mb-0" style="line-height: 1.8;">
+                    Từng mẻ trân châu hoàng kim được nấu mới mỗi 4 tiếng, ngào đẫm đường đen mật mía tự nhiên cho độ dẻo giòn thơm ngọt chuẩn mực.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         SECTION 1: HÀNH TRÌNH HƯƠNG VỊ (TIMELINE / MILESTONES ZIGZAG)
+         ===================================================================== -->
+    <div class="timeline-section mb-5 pb-5">
+        <div class="text-center mb-5">
+            <span class="badge rounded-pill px-3 py-1 text-uppercase mb-2" style="background-color: var(--nn-soft-pink); color: var(--nn-deep-rose); font-weight: 700; font-size: 0.75rem; letter-spacing: 1.5px;">
+                Chặng Đường Phát Triển
+            </span>
+            <h2 class="display-6 font-serif fw-bold" style="color: var(--nn-plum-text);">Hành Trình Hương Vị</h2>
+            <div class="sakura-divider"></div>
+            <p class="text-secondary mx-auto mb-0" style="max-width: 650px;">
+                Từng cột mốc là một dấu ấn đam mê, lưu giữ trọn vẹn sự nỗ lực đưa hương trà mộc và sữa tươi thanh lành đến mọi nẻo đường.
+            </p>
+        </div>
+
+        <div class="story-timeline">
+            @for (int i = 0; i < Model.Milestones.Count; i++)
+            {
+                var milestone = Model.Milestones[i];
+                var isEven = (i % 2 == 0);
+
+                <div class="timeline-item">
+                    <!-- Nút chấm tròn trung tâm -->
+                    <div class="timeline-dot"></div>
+
+                    <div class="row align-items-center g-4">
+                        @if (isEven)
+                        {
+                            <!-- CỘT TRÁI: Nội dung mốc -->
+                            <div class="col-lg-6 timeline-content-col pe-lg-5">
+                                <div class="timeline-content">
+                                    <span class="timeline-year-badge">@milestone.Year</span>
+                                    <h4 class="font-serif fw-bold mb-2" style="color: var(--nn-plum-text);">@milestone.Title</h4>
+                                    <p class="text-secondary mb-0" style="line-height: 1.8;">@milestone.Description</p>
+                                </div>
+                            </div>
+                            <!-- CỘT PHẢI: Hình ảnh minh họa -->
+                            <div class="col-lg-6 ps-lg-5 d-none d-lg-block">
+                                @if (!string.IsNullOrEmpty(milestone.ImageUrl))
+                                {
+                                    <div class="overflow-hidden rounded-4 shadow-sm border" style="border-color: var(--nn-card-border); max-height: 260px;">
+                                        <img src="@Url.Content(milestone.ImageUrl)" alt="@milestone.Title" class="w-100 h-100" style="object-fit: cover; object-position: top center; max-height: 260px; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" />
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <!-- CỘT TRÁI: Hình ảnh minh họa -->
+                            <div class="col-lg-6 pe-lg-5 d-none d-lg-block">
+                                @if (!string.IsNullOrEmpty(milestone.ImageUrl))
+                                {
+                                    <div class="overflow-hidden rounded-4 shadow-sm border" style="border-color: var(--nn-card-border); max-height: 260px;">
+                                        <img src="@Url.Content(milestone.ImageUrl)" alt="@milestone.Title" class="w-100 h-100" style="object-fit: cover; object-position: top center; max-height: 260px; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" />
+                                    </div>
+                                }
+                            </div>
+                            <!-- CỘT PHẢI: Nội dung mốc -->
+                            <div class="col-lg-6 timeline-content-col ps-lg-5">
+                                <div class="timeline-content">
+                                    <span class="timeline-year-badge">@milestone.Year</span>
+                                    <h4 class="font-serif fw-bold mb-2" style="color: var(--nn-plum-text);">@milestone.Title</h4>
+                                    <p class="text-secondary mb-0" style="line-height: 1.8;">@milestone.Description</p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         SECTION 2: QUY TRÌNH TUYỂN CHỌN & PHA CHẾ (FARM TO CUP)
+         ===================================================================== -->
+    <div class="farm-to-cup-container mb-5">
+        <div class="text-center mb-5">
+            <span class="badge rounded-pill px-3 py-1 text-uppercase mb-2" style="background-color: var(--nn-soft-pink); color: var(--nn-deep-rose); font-weight: 700; font-size: 0.75rem; letter-spacing: 1.5px;">
+                Nghệ Thuật Trà Thủ Công
+            </span>
+            <h2 class="display-6 font-serif fw-bold" style="color: var(--nn-plum-text);">Quy Trình Tuyển Chọn & Pha Chế</h2>
+            <div class="sakura-divider"></div>
+            <p class="text-secondary mx-auto mb-0" style="max-width: 650px;">
+                Hành trình <strong>Farm to Cup</strong> nghiêm ngặt khép kín – Từ búp trà mộc sương sớm đến ly trà sữa ngào ngạt hương hoa trên tay bạn.
+            </p>
+        </div>
+
+        <div class="row g-4 position-relative">
+            @for (int i = 0; i < Model.CraftingSteps.Count; i++)
+            {
+                var step = Model.CraftingSteps[i];
+                var isLast = (i == Model.CraftingSteps.Count - 1);
+
+                <div class="col-lg-3 col-md-6 position-relative">
+                    <div class="crafting-step-card shadow-sm">
+                        <!-- Huy hiệu bước -->
+                        <span class="step-number-badge">BƯỚC 0@(step.StepNumber)</span>
+
+                        <!-- Ảnh minh họa tròn 4 bước chế tác -->
+                        <div class="crafting-icon-circle">
+                            <img src="~/images/b@(step.StepNumber).png" asp-append-version="true" alt="@step.StepName" class="w-100 h-100" style="object-fit: contain;" />
+                        </div>
+
+                        <!-- Tên & mô tả bước -->
+                        <h5 class="font-serif fw-bold mb-3" style="color: var(--nn-plum-text);">@step.StepName</h5>
+                        <p class="text-secondary small mb-0" style="line-height: 1.75;">@step.Description</p>
+                    </div>
+
+                    <!-- Mũi tên connector giữa các bước trên Desktop -->
+                    @if (!isLast)
+                    {
+                        <div class="step-connector-arrow d-none d-lg-block">
+                            <i class="bi bi-chevron-right"></i>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- KHỐI 3: CTA KHÁM PHÁ MENU -->
+    <div class="p-5 rounded-4 text-center position-relative overflow-hidden shadow-sm" style="background: linear-gradient(135deg, #FDE8EA 0%, #FFFFFF 100%); border: 2px dashed rgba(244, 166, 178, 0.6);">
+        <h3 class="font-serif fw-bold mb-3" style="color: var(--nn-plum-text);">Bạn Đã Sẵn Sàng Thưởng Thức TN Tea?</h3>
+        <p class="text-secondary mb-4 mx-auto" style="max-width: 600px;">
+            Hãy để từng ngụm trà sữa TN Tea xua tan mỏi mệt và đồng hành cùng bạn trong những phút giây bình yên nhất.
+        </p>
+        <a asp-controller="Product" asp-action="Menu" class="btn btn-sakura-primary px-4 py-3 fs-6">
+            <i class="bi bi-cup-straw me-2"></i> Khám Phá Menu Ngay
+        </a>
+    </div>
+</div>

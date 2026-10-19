@@ -1,0 +1,77 @@
+@model WebTraSua.Models.Product
+
+@{
+    ViewData["Title"] = Model.Name + " - Chi Tiết";
+}
+
+<div class="container my-4">
+    <!-- Breadcrumb điều hướng -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Product" asp-action="Index" class="text-decoration-none fw-semibold" style="color: var(--nn-deep-rose);"><i class="bi bi-house-door me-1"></i>Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Product" asp-action="Index" class="text-decoration-none fw-semibold" style="color: var(--nn-deep-rose);">Menu Trà Sữa</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+        </ol>
+    </nav>
+
+    <div class="card sakura-card p-4 p-md-5">
+        <div class="row g-5 align-items-center">
+            <!-- Cột hình ảnh sản phẩm -->
+            <div class="col-md-5 text-center">
+                <div class="position-relative overflow-hidden rounded-4 shadow-sm border" style="border-color: var(--nn-card-border);">
+                    <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid" style="width: 100%; height: 380px; object-fit: cover;"
+                         onerror="this.onerror=null; this.src='https://placehold.co/600x400/FBD7DC/4A202A?text=Tn+Tea';" />
+                    <span class="sakura-tag">
+                        Đậm Hương Vị Hoa
+                    </span>
+                </div>
+            </div>
+
+            <!-- Cột thông tin chi tiết -->
+            <div class="col-md-7">
+                <span class="badge rounded-pill px-3 py-2 text-uppercase mb-2" style="background-color: var(--nn-soft-pink); color: var(--nn-deep-rose); font-weight: 700; font-size: 0.75rem;">
+                    Trà Sữa Cao Cấp TN Tea
+                </span>
+
+                <h1 class="font-serif fw-bold mb-3 display-6" style="color: var(--nn-plum-text);">@Model.Name</h1>
+
+                <!-- Giá bán -->
+                <div class="mb-4 d-flex align-items-baseline gap-2">
+                    <span class="display-6 fw-bold sakura-price">@Model.Price.ToString("N0") đ</span>
+                    <span class="text-muted small">(Đã bao gồm thuế GTGT)</span>
+                </div>
+
+                <!-- Khối mô tả sản phẩm -->
+                <div class="p-4 rounded-4 mb-4" style="background-color: var(--nn-ultra-light); border-left: 4px solid var(--nn-primary-pink);">
+                    <h6 class="fw-bold text-uppercase mb-2 small" style="color: var(--nn-deep-rose); letter-spacing: 1px;">
+                        <i class="bi bi-info-circle me-1"></i> Mô tả chi tiết món
+                    </h6>
+                    <p class="mb-0 text-secondary" style="line-height: 1.8;">@Model.Description</p>
+                </div>
+
+                <!-- Cụm nút chức năng: Cho vào giỏ hàng (POST form) và Xem giỏ hàng -->
+                <div class="d-flex flex-wrap align-items-center gap-3 pt-2">
+                    <form asp-controller="Cart" asp-action="AddToCart" method="post" class="d-flex align-items-center gap-2">
+                        <input type="hidden" name="id" value="@Model.ProductId" />
+                        <div class="input-group" style="width: 130px;">
+                            <span class="input-group-text bg-white border-end-0 fw-semibold" style="border-color: var(--nn-card-border); color: var(--nn-sub-text);">SL</span>
+                            <input type="number" name="quantity" class="form-control text-center fw-bold" value="1" min="1" max="99" style="border-color: var(--nn-card-border);" />
+                        </div>
+                        <button type="submit" class="btn btn-sakura-primary px-4 py-2">
+                            <i class="bi bi-cart-plus me-1"></i> Cho vào giỏ hàng
+                        </button>
+                    </form>
+
+                    <a asp-controller="Cart" asp-action="Index" class="btn btn-sakura-outline">
+                        <i class="bi bi-cart3 me-1"></i> Xem giỏ hàng
+                    </a>
+                </div>
+
+                <div class="mt-4 pt-3 border-top d-flex gap-4 text-muted small">
+                    <div><i class="bi bi-shield-check text-success me-1"></i>100% nguyên liệu tự nhiên</div>
+                    <div><i class="bi bi-truck text-danger me-1"></i>Giao hàng nhanh trong 30 phút</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

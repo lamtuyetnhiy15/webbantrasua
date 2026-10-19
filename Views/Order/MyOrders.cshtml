@@ -1,0 +1,89 @@
+@model IEnumerable<WebTraSua.Models.Order>
+
+@{
+    ViewData["Title"] = "Lịch Sử Đơn Hàng Của Tôi - TN Tea";
+}
+
+<div class="container my-5 py-3">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-3 border-bottom">
+        <div>
+            <span class="badge rounded-pill px-3 py-1 mb-2" style="background-color: #FDE8EA; color: #D25C70; font-weight: 700; font-size: 0.75rem; letter-spacing: 1.5px;">
+                LỊCH SỬ MUA HÀNG
+            </span>
+            <h2 class="font-serif fw-bold mb-0" style="color: #4A202A; font-family: 'Playfair Display', Georgia, serif;">
+                Đơn Hàng Của Bạn
+            </h2>
+            <p class="text-secondary small mb-0">Theo dõi trạng thái và chi tiết các đơn trà sữa bạn đã đặt tại TN Tea</p>
+        </div>
+        <div>
+            <a asp-controller="Product" asp-action="Menu" class="btn text-white rounded-pill px-4 py-2 fw-semibold shadow-sm" style="background: linear-gradient(135deg, #EE8698 0%, #E87A90 100%);">
+                <i class="bi bi-cup-straw me-1"></i> Đặt Món Mới
+            </a>
+        </div>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="row g-4">
+            @foreach (var order in Model)
+            {
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm rounded-4 p-4" style="background: #FFFFFF; border: 1px solid rgba(244, 166, 178, 0.35) !important;">
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 pb-3 mb-3 border-bottom">
+                            <div>
+                                <span class="fw-bold fs-5" style="color: #EE8698;">Mã Đơn #@order.OrderId</span>
+                                <span class="text-muted small ms-2"><i class="bi bi-calendar3 me-1"></i>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">
+                                    <i class="bi bi-check-circle-fill me-1"></i> Đã thanh toán
+                                </span>
+                                <a asp-action="Invoice" asp-route-id="@order.OrderId" class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                                    <i class="bi bi-receipt me-1"></i> Xem Chi Tiết Hóa Đơn
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Danh sách món trong đơn hàng -->
+                        <div class="row g-3">
+                            @foreach (var item in order.OrderDetails)
+                            {
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="d-flex align-items-center gap-3 p-2 rounded-3" style="background-color: #FFF8F9;">
+                                        <img src="@(item.Product?.ImageUrl ?? "https://placehold.co/80x80/FBD7DC/4A202A?text=TN+Tea")" 
+                                             alt="@item.Product?.Name" 
+                                             style="width: 50px; height: 50px; object-fit: cover; border-radius: 10px;" />
+                                        <div class="flex-grow-1">
+                                            <div class="fw-semibold small" style="color: #4A202A;">@(item.Product?.Name ?? "Món trà sữa")</div>
+                                            <div class="text-muted small">@item.Quantity x @item.UnitPrice.ToString("N0") đ</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="d-flex justify-content-end align-items-center gap-2 pt-3 mt-3 border-top">
+                            <span class="text-secondary small">Tổng thanh toán:</span>
+                            <span class="fs-5 fw-bold text-danger">@order.TotalAmount.ToString("N0") đ</span>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="card border-0 shadow-sm rounded-4 p-5 text-center" style="background: #FFFFFF;">
+            <div class="mb-3">
+                <i class="bi bi-bag-x display-3" style="color: #EE8698;"></i>
+            </div>
+            <h4 class="fw-bold mb-2" style="color: #4A202A;">Bạn chưa có đơn hàng nào</h4>
+            <p class="text-secondary mb-4">Hãy khám phá menu trà sữa đậm hương thanh mát của TN Tea và đặt cho mình một ly nhé!</p>
+            <div>
+                <a asp-controller="Product" asp-action="Menu" class="btn text-white rounded-pill px-4 py-2 fw-semibold" style="background: #EE8698;">
+                    <i class="bi bi-cup-hot me-1"></i> Khám Phá Menu Ngay
+                </a>
+            </div>
+        </div>
+    }
+</div>

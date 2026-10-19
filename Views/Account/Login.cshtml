@@ -1,0 +1,116 @@
+@model WebTraSua.Models.LoginViewModel
+
+@{
+    ViewData["Title"] = "Đăng Nhập - TN Tea";
+}
+
+<div class="container my-5 py-3">
+    <div class="row justify-content-center">
+        <div class="col-11 col-sm-9 col-md-7 col-lg-5 col-xl-4">
+            <!-- Thẻ Card đăng nhập phong cách TN Tea Sakura -->
+            <div class="card border-0 shadow-lg p-4 p-md-5" style="background: #FFFFFF; border-radius: 16px; border: 1px solid rgba(244, 166, 178, 0.35); box-shadow: 0 12px 35px rgba(238, 134, 152, 0.15) !important;">
+                
+                <!-- Header Logo & Tiêu đề -->
+                <div class="text-center mb-4">
+                    <img src="~/images/logo.jpg" alt="TN Tea Logo" class="mb-3 shadow-sm" 
+                         style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #FFF8F9; box-shadow: 0 4px 12px rgba(238, 134, 152, 0.25);" />
+                    <span class="d-block badge rounded-pill px-3 py-1 mb-2 mx-auto" 
+                          style="width: fit-content; background-color: #FDE8EA; color: #D25C70; font-weight: 700; font-size: 0.75rem; letter-spacing: 1.5px;">
+                        TÀI KHOẢN TN TEA
+                    </span>
+                    <h2 class="font-serif fw-bold mb-1" style="color: #4A202A; font-family: 'Playfair Display', Georgia, serif;">Đăng Nhập</h2>
+                    <p class="text-secondary small mb-0">Thưởng thức hương vị trà sữa ngọt ngào cùng TN Tea</p>
+                </div>
+
+                <!-- Thông báo lỗi chung nếu có -->
+                @if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty]?.Errors.Count > 0)
+                {
+                    <div class="alert alert-danger py-2 px-3 small rounded-3 border-0 mb-3" role="alert" style="background-color: #FDE8EA; color: #B71C1C;">
+                        <i class="bi bi-exclamation-circle-fill me-1"></i>
+                        @Html.ValidationSummary(true, "", new { @class = "mb-0" })
+                    </div>
+                }
+
+                <form asp-controller="Account" asp-action="Login" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="ReturnUrl" />
+
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label fw-semibold small text-secondary">Địa chỉ Email</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0 text-muted" style="border-color: #F8D7DC;">
+                                <i class="bi bi-envelope-fill text-muted"></i>
+                            </span>
+                            <input asp-for="Email" class="form-control border-start-0" placeholder="admin@tntea.vn hoặc email..." 
+                                   autofocus style="border-color: #F8D7DC;" />
+                        </div>
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Mật khẩu -->
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <label asp-for="Password" class="form-label fw-semibold small text-secondary mb-1">Mật khẩu</label>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0 text-muted" style="border-color: #F8D7DC;">
+                                <i class="bi bi-lock-fill text-muted"></i>
+                            </span>
+                            <input asp-for="Password" class="form-control border-start-0" placeholder="Nhập mật khẩu..." 
+                                   style="border-color: #F8D7DC;" />
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Ghi nhớ mật khẩu -->
+                    <div class="mb-4 d-flex justify-content-between align-items-center">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" asp-for="RememberMe" id="rememberMeCheck" style="accent-color: #EE8698;">
+                            <label class="form-check-label small text-secondary" for="rememberMeCheck">
+                                Ghi nhớ đăng nhập
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Nút Đăng nhập -->
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn text-white py-2 fw-semibold rounded-pill shadow-sm" 
+                                style="background: linear-gradient(135deg, #EE8698 0%, #E87A90 100%); border: none; transition: all 0.3s ease;">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Đăng Nhập
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Link Đăng ký tài khoản mới -->
+                <div class="text-center mt-4 pt-3 border-top">
+                    <p class="small text-secondary mb-0">
+                        Chưa có tài khoản? 
+                        <a asp-action="Register" class="fw-bold text-decoration-none" style="color: #EE8698;">Đăng ký ngay</a>
+                    </p>
+                </div>
+
+                <!-- Hộp thông tin tài khoản mẫu phục vụ thử nghiệm -->
+                <div class="mt-4 p-3 rounded-4" style="background-color: #FFF8F9; border: 1px dashed #F4A6B2;">
+                    <div class="d-flex align-items-center gap-1 mb-2">
+                        <i class="bi bi-key-fill text-danger small"></i>
+                        <span class="fw-bold small" style="color: #4A202A;">Tài khoản thử nghiệm sẵn có:</span>
+                    </div>
+                    <div class="small text-secondary mb-1">
+                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 me-1">Admin</span>
+                        <code>admin@tntea.vn</code> / <code>admin123</code>
+                    </div>
+                    <div class="small text-secondary">
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 me-1">Khách</span>
+                        <code>khachhang@gmail.com</code> / <code>123456</code>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

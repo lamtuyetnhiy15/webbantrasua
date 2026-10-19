@@ -1,0 +1,14 @@
+## .NET Core
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+.idea/
+.vscode/
+
+## SQLite
+*.db-shm
+*.db-wal

@@ -1,0 +1,120 @@
+@model WebTraSua.Models.Order
+
+@{
+    ViewData["Title"] = "Hóa Đơn #" + Model.OrderId + " - TN Tea";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <!-- Thông báo thành công -->
+            <div class="alert alert-success d-flex align-items-center rounded-4 p-3 mb-4 shadow-sm border-0" role="alert" style="background-color: #E2F7E9; color: #1B5E20;">
+                <i class="bi bi-check-circle-fill fs-2 me-3 text-success"></i>
+                <div>
+                    <h5 class="alert-heading fw-bold mb-1">Thanh toán đơn hàng thành công!</h5>
+                    <p class="mb-0 small">Cảm ơn bạn đã lựa chọn TN Tea. Đơn hàng đang được chuẩn bị và sẽ sớm được giao tới bạn.</p>
+                </div>
+            </div>
+
+            <!-- Thẻ Hóa đơn -->
+            <div class="card sakura-card p-4 p-md-5">
+                <!-- Header hóa đơn -->
+                <div class="row align-items-center border-bottom pb-4 mb-4">
+                    <div class="col-sm-6">
+                        <h2 class="font-serif fw-bold mb-1 d-flex align-items-center gap-2" style="color: var(--nn-plum-text);">
+                            <img src="~/images/logo.jpg" alt="TN Tea Logo" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--nn-soft-pink);" />
+                            <span>TN Tea</span>
+                        </h2>
+                        <p class="text-secondary small mb-0">Hương Vị Trà Sữa Đậm Hương & Tinh Khiết</p>
+                    </div>
+                    <div class="col-sm-6 text-sm-end mt-3 mt-sm-0">
+                        <h4 class="font-serif fw-bold text-danger mb-1">HÓA ĐƠN BÁN HÀNG</h4>
+                        <span class="badge px-3 py-2 fs-6 rounded-pill" style="background-color: var(--nn-soft-pink); color: var(--nn-deep-rose);">
+                            Mã đơn: #@Model.OrderId
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Thông tin khách hàng & Thời gian -->
+                <div class="row mb-4">
+                    <div class="col-sm-6 mb-3 mb-sm-0">
+                        <h6 class="text-uppercase text-muted fw-bold small">Khách hàng:</h6>
+                        <p class="mb-1 fw-bold fs-5" style="color: var(--nn-plum-text);">
+                            @(Model.User?.FullName ?? "Khách hàng TN Tea")
+                        </p>
+                        <p class="text-secondary mb-0 small"><i class="bi bi-envelope me-1"></i>@(Model.User?.Email ?? Model.User?.Username ?? "N/A")</p>
+                        @if (!string.IsNullOrEmpty(Model.User?.PhoneNumber))
+                        {
+                            <p class="text-secondary mb-0 small"><i class="bi bi-telephone me-1"></i>@Model.User.PhoneNumber</p>
+                        }
+                    </div>
+                    <div class="col-sm-6 text-sm-end">
+                        <h6 class="text-uppercase text-muted fw-bold small">Thời gian lập:</h6>
+                        <p class="mb-1 fw-semibold text-secondary">
+                            <i class="bi bi-calendar3 me-1"></i> @Model.OrderDate.ToString("dd/MM/yyyy HH:mm:ss")
+                        </p>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
+                            <i class="bi bi-check2-circle me-1"></i> Đã thanh toán
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Bảng danh sách sản phẩm đã mua -->
+                <div class="table-responsive mb-4">
+                    <table class="table table-bordered align-middle">
+                        <thead style="background-color: var(--nn-soft-pink); color: var(--nn-plum-text);">
+                            <tr>
+                                <th class="text-center" style="width: 60px;">STT</th>
+                                <th>Tên món trà sữa</th>
+                                <th class="text-center" style="width: 120px;">Số lượng</th>
+                                <th class="text-end" style="width: 150px;">Đơn giá</th>
+                                <th class="text-end" style="width: 160px;">Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int stt = 1;
+                            }
+                            @foreach (var detail in Model.OrderDetails)
+                            {
+                                var subtotal = detail.Quantity * detail.UnitPrice;
+                                <tr>
+                                    <td class="text-center text-muted">@(stt++)</td>
+                                    <td>
+                                        <span class="fw-bold" style="color: var(--nn-plum-text);">
+                                            @(detail.Product?.Name ?? $"Sản phẩm #{detail.ProductId}")
+                                        </span>
+                                    </td>
+                                    <td class="text-center fw-semibold">@detail.Quantity</td>
+                                    <td class="text-end">@detail.UnitPrice.ToString("N0") đ</td>
+                                    <td class="text-end fw-bold sakura-price fs-6">@subtotal.ToString("N0") đ</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan="4" class="text-end fs-5 py-3" style="color: var(--nn-plum-text);">
+                                    Tổng số tiền đã thanh toán:
+                                </th>
+                                <th class="text-end fs-3 py-3 sakura-price" style="color: #E24A6F;">
+                                    @Model.TotalAmount.ToString("N0") đ
+                                </th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <!-- Nút thao tác -->
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 pt-3 border-top">
+                    <a asp-controller="Product" asp-action="Index" class="btn btn-sakura-primary">
+                        <i class="bi bi-arrow-left me-1"></i> Tiếp tục mua hàng
+                    </a>
+
+                    <button type="button" class="btn btn-sakura-outline" onclick="window.print()">
+                        <i class="bi bi-printer me-1"></i> In hóa đơn
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

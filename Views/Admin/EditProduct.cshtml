@@ -1,0 +1,122 @@
+@model WebTraSua.Models.Product
+
+@{
+    ViewData["Title"] = "Chỉnh Sửa Món #" + Model.ProductId + " - TN Tea";
+}
+
+<div class="container my-5 py-3">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-7">
+            <!-- Header tiêu đề -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <span class="badge rounded-pill px-3 py-1 mb-2" style="background-color: #FDE8EA; color: #D25C70; font-weight: 700; font-size: 0.75rem; letter-spacing: 1.5px;">
+                        MENU QUẢN TRỊ
+                    </span>
+                    <h2 class="font-serif fw-bold mb-0" style="color: #4A202A; font-family: 'Playfair Display', Georgia, serif;">
+                        Chỉnh Sửa Món Trà Sữa
+                    </h2>
+                </div>
+                <a asp-action="Products" class="btn btn-outline-secondary rounded-pill px-3 py-2 fw-semibold">
+                    <i class="bi bi-arrow-left me-1"></i> Quay lại
+                </a>
+            </div>
+
+            <!-- Card Form chỉnh sửa -->
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5" style="background: #FFFFFF; border: 1px solid rgba(244, 166, 178, 0.35) !important;">
+                <form asp-action="EditProduct" asp-route-id="@Model.ProductId" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="ProductId" />
+
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 px-3 small rounded-3 border-0 mb-3" style="background-color: #FDE8EA; color: #B71C1C;"></div>
+
+                    <!-- Tên món trà sữa -->
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label fw-semibold small text-secondary">Tên món trà sữa <span class="text-danger">*</span></label>
+                        <input asp-for="Name" class="form-control" placeholder="Ví dụ: Trà Sữa Oolong..." autofocus style="border-color: #F8D7DC;" />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Đơn giá -->
+                    <div class="mb-3">
+                        <label asp-for="Price" class="form-label fw-semibold small text-secondary">Đơn giá (VNĐ) <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input asp-for="Price" type="number" step="1000" min="0" class="form-control" style="border-color: #F8D7DC;" />
+                            <span class="input-group-text bg-white" style="border-color: #F8D7DC;">đ</span>
+                        </div>
+                        <span asp-validation-for="Price" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Hình ảnh sản phẩm -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small text-secondary">Hình ảnh món</label>
+                        
+                        <!-- Tải file ảnh mới nếu muốn thay đổi -->
+                        <div class="mb-2">
+                            <label class="form-label small text-muted">Chọn ảnh mới từ máy tính (nếu muốn đổi ảnh):</label>
+                            <input type="file" name="imageUpload" id="imageFileInput" class="form-control" accept="image/*" style="border-color: #F8D7DC;" />
+                        </div>
+
+                        <!-- Hoặc nhập link ảnh trực tiếp -->
+                        <div class="mb-2">
+                            <label class="form-label small text-muted">Hoặc chỉnh sửa link ảnh Online (URL):</label>
+                            <input asp-for="ImageUrl" id="imageUrlInput" class="form-control" style="border-color: #F8D7DC;" />
+                        </div>
+
+                        <!-- Khung xem trước ảnh -->
+                        <div class="mt-3 p-3 text-center rounded-3" style="background-color: #FFF8F9; border: 1px dashed #F4A6B2;">
+                            <small class="text-muted d-block mb-2">Hình ảnh hiện tại:</small>
+                            <img id="imagePreview" src="@Model.ImageUrl" 
+                                 alt="@Model.Name" class="img-fluid rounded-3 shadow-sm" style="max-height: 180px; object-fit: cover;" 
+                                 onerror="this.src='https://placehold.co/400x300/FBD7DC/4A202A?text=TN+Tea';" />
+                        </div>
+                    </div>
+
+                    <!-- Mô tả chi tiết -->
+                    <div class="mb-4">
+                        <label asp-for="Description" class="form-label fw-semibold small text-secondary">Mô tả hương vị & nguyên liệu</label>
+                        <textarea asp-for="Description" rows="4" class="form-control" style="border-color: #F8D7DC;"></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Nút thao tác -->
+                    <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                        <span class="small text-muted">Mã món: #@Model.ProductId</span>
+                        <div class="d-flex gap-2">
+                            <a asp-action="Products" class="btn btn-outline-secondary rounded-pill px-4 py-2 fw-semibold">
+                                Hủy bỏ
+                            </a>
+                            <button type="submit" class="btn text-white rounded-pill px-4 py-2 fw-semibold shadow-sm" 
+                                    style="background: linear-gradient(135deg, #EE8698 0%, #E87A90 100%); border: none;">
+                                <i class="bi bi-save me-1"></i> Cập Nhật Món
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Xử lý xem trước ảnh khi chọn file
+        document.getElementById('imageFileInput').addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    document.getElementById('imagePreview').src = evt.target.result;
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+
+        // Xử lý xem trước ảnh khi thay đổi URL
+        document.getElementById('imageUrlInput').addEventListener('input', function(e) {
+            if (e.target.value.trim() !== '') {
+                document.getElementById('imagePreview').src = e.target.value.trim();
+            }
+        });
+    </script>
+}

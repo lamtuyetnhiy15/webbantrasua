@@ -1,0 +1,213 @@
+@using WebTraSua.Helpers
+@using WebTraSua.Models
+@{
+    var cart = Context.Session.GetObject<List<CartItem>>("Cart");
+    var totalCartCount = cart?.Sum(c => c.Quantity) ?? 0;
+    var currentUser = Context.Session.GetObject<User>("User");
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - TN Tea | Trà Sữa Đậm Hương</title>
+    <!-- Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <!-- TN Tea Theme -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header class="sticky-top">
+        <nav class="navbar navbar-expand-lg navbar-nn-sakura">
+            <div class="container">
+                <!-- Logo thương hiệu TN Tea -->
+                <a class="navbar-brand d-flex align-items-center gap-2" asp-controller="Product" asp-action="Index">
+                    <img src="~/images/logo.jpg" alt="TN Tea Logo" class="brand-logo-img" />
+                    <span>TN Tea</span>
+                </a>
+
+                <!-- Toggler trên thiết bị di động -->
+                <button class="navbar-toggler border-0 text-white shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTnTea" aria-controls="navbarTnTea"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="bi bi-list fs-2 text-white"></i>
+                </button>
+
+                <!-- Menu điều hướng -->
+                <div class="collapse navbar-collapse" id="navbarTnTea">
+                    @{
+                        var currentCtrl = ViewContext.RouteData.Values["controller"]?.ToString();
+                        var currentAct = ViewContext.RouteData.Values["action"]?.ToString();
+                    }
+                    <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link @(currentCtrl == "Product" && currentAct == "Index" ? "active" : "")" asp-controller="Product" asp-action="Index">Trang chủ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(currentCtrl == "Home" && currentAct == "Story" ? "active" : "")" asp-controller="Home" asp-action="Story">Chuyện TN Tea</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(currentCtrl == "Product" && currentAct == "Menu" ? "active" : "")" asp-controller="Product" asp-action="Menu">Menu</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(currentCtrl == "Home" && currentAct == "Contact" ? "active" : "")" asp-controller="Home" asp-action="Contact">Liên hệ</a>
+                        </li>
+                    </ul>
+
+                    <!-- Cụm góc phải: Giỏ hàng (hình tròn như VV.png) & Đăng nhập -->
+                    <div class="d-flex align-items-center gap-3">
+                        <!-- Nút Giỏ hàng hình tròn chuẩn thiết kế VV.png -->
+                        <a asp-controller="Cart" asp-action="Index" class="btn-cart-circle" title="Xem giỏ hàng">
+                            <i class="bi bi-cart3"></i>
+                            @if (totalCartCount > 0)
+                            {
+                                <span class="cart-counter-badge">@totalCartCount</span>
+                            }
+                        </a>
+
+                        <!-- Tài khoản & Xác thực -->
+                        @if (User.Identity?.IsAuthenticated == true || currentUser != null)
+                        {
+                            var displayName = User.Identity?.Name ?? currentUser?.FullName ?? "Tài khoản";
+                            var userEmail = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? currentUser?.Email;
+                            var isAdmin = User.IsInRole("Admin") || (currentUser?.Role == "Admin");
+
+                            <div class="dropdown">
+                                <button class="btn btn-light rounded-pill px-3 py-2 fw-semibold shadow-sm dropdown-toggle d-flex align-items-center gap-2" 
+                                        type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false" style="color: var(--nn-deep-rose);">
+                                    <i class="bi bi-person-circle"></i>
+                                    <span>@displayName</span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-4 mt-2 py-2" aria-labelledby="userMenu" style="min-width: 230px;">
+                                    <li class="px-3 py-2 border-bottom">
+                                        <div class="fw-bold text-dark small">@displayName</div>
+                                        <div class="text-muted text-truncate small" style="max-width: 200px;">@userEmail</div>
+                                        <span class="badge @(isAdmin ? "bg-danger" : "bg-primary") bg-opacity-10 @(isAdmin ? "text-danger" : "text-primary") rounded-pill mt-1" style="font-size: 0.7rem;">
+                                            @(isAdmin ? "Quản Trị Viên TN Tea" : "Khách Hàng")
+                                        </span>
+                                    </li>
+                                    
+                                    @if (isAdmin)
+                                    {
+                                        <li>
+                                            <a class="dropdown-item py-2 fw-semibold" asp-controller="Admin" asp-action="Index" style="color: var(--nn-deep-rose);">
+                                                <i class="bi bi-speedometer2 me-2"></i>Trang Quản Trị (Dashboard)
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item py-2" asp-controller="Admin" asp-action="Products">
+                                                <i class="bi bi-cup-hot me-2 text-muted"></i>Quản lý Sản phẩm
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item py-2" asp-controller="Admin" asp-action="Orders">
+                                                <i class="bi bi-receipt me-2 text-muted"></i>Quản lý Đơn hàng
+                                            </a>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li>
+                                            <a class="dropdown-item py-2 fw-semibold" asp-controller="Order" asp-action="MyOrders" style="color: var(--nn-deep-rose);">
+                                                <i class="bi bi-bag-check me-2"></i>Lịch sử đơn hàng của tôi
+                                            </a>
+                                        </li>
+                                    }
+
+                                    <li><hr class="dropdown-divider my-1"></li>
+                                    <li>
+                                        <a class="dropdown-item text-danger fw-semibold py-2" asp-controller="Account" asp-action="Logout">
+                                            <i class="bi bi-box-arrow-right me-2"></i>Đăng xuất
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
+                        else
+                        {
+                            <a asp-controller="Account" asp-action="Login" class="btn btn-light rounded-pill px-3 py-2 fw-semibold shadow-sm d-flex align-items-center gap-1" style="color: var(--nn-deep-rose);">
+                                <i class="bi bi-person"></i>
+                                <span>Đăng nhập / Đăng ký</span>
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Nội dung chính -->
+    <main role="main">
+        <!-- Flash Alert Thông báo -->
+        @if (TempData["SuccessMessage"] != null || TempData["ErrorMessage"] != null)
+        {
+            <div class="container my-3">
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm border-0" role="alert" style="background-color: #E2F7E9; color: #1B5E20;">
+                        <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show rounded-4 shadow-sm border-0" role="alert" style="background-color: #FDE8EA; color: #B71C1C;">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+            </div>
+        }
+
+        @RenderBody()
+    </main>
+
+    <!-- Footer phong cách TN Tea Sakura -->
+    <footer class="footer-sakura" id="contact">
+        <div class="container">
+            <div class="row g-4 justify-content-between">
+                <div class="col-md-5">
+                    <h3 class="font-serif fw-bold mb-3 d-flex align-items-center gap-2" style="color: var(--nn-plum-text);">
+                        <img src="~/images/logo.jpg" alt="TN Tea Logo" style="height: 38px; width: 38px; border-radius: 50%; object-fit: cover; border: 2px solid var(--nn-soft-pink);" />
+                        <span>TN Tea</span>
+                    </h3>
+                    <p class="text-secondary small pe-lg-4" style="line-height: 1.8;">
+                        Khơi nguồn cảm hứng từ các loài hoa tinh khiết, kết hợp cùng vị dịu nhẹ của trà sữa tươi lá cao cấp, TN Tea không chỉ mang đến nhiều tầng đặc biệt là sự thư giãn, góp phần tìm lại bình yên giữa bộn bề của cuộc sống.
+                    </p>
+                    <div class="d-flex gap-3 fs-5" style="color: var(--nn-deep-rose);">
+                        <a href="#" class="text-reset"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-reset"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-reset"><i class="bi bi-tiktok"></i></a>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <h6 class="fw-bold text-uppercase mb-3" style="letter-spacing: 1px;">Menu</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-2 text-secondary">
+                        <li><a href="#menu" class="text-decoration-none text-reset">Trà Sữa Đậm Hương</a></li>
+                        <li><a href="#menu" class="text-decoration-none text-reset">Trà Sữa Truyền Thống</a></li>
+                        <li><a href="#menu" class="text-decoration-none text-reset">Topping Trân Châu Hoàng Gia</a></li>
+                        <li><a href="#menu" class="text-decoration-none text-reset">Cheese Kem Trứng Nướng</a></li>
+                    </ul>
+                </div>
+                <div class="col-6 col-md-4">
+                    <h6 class="fw-bold text-uppercase mb-3" style="letter-spacing: 1px;">Liên Hệ & Cửa Hàng</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-2 text-secondary">
+                        <li><i class="bi bi-geo-alt-fill text-danger me-2"></i>123 Phố Trà Sữa, Quận 1, TP. Hồ Chí Minh</li>
+                        <li><i class="bi bi-telephone-fill text-danger me-2"></i>Hotline: 1900 6868 (8:00 - 22:30)</li>
+                        <li><i class="bi bi-envelope-fill text-danger me-2"></i>contact@tntea.vn</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-top mt-4 pt-3 text-center small text-muted">
+                &copy; @DateTime.Now.Year TN Tea - Trà Sữa Đậm Vị Tình Thân. Bản quyền thuộc về thương hiệu TN Tea.
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

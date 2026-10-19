@@ -1,0 +1,125 @@
+@{
+    ViewData["Title"] = "Liên Hệ - TN Tea";
+}
+
+<div class="contact-hero-section position-relative overflow-hidden mb-4">
+    <div class="container py-4 text-center">
+        <span class="badge rounded-pill px-3 py-1 text-uppercase mb-2" style="background-color: var(--nn-soft-pink); color: var(--nn-deep-rose); font-weight: 700; font-size: 0.75rem; letter-spacing: 1.5px;">
+            Kết Nối Với Chúng Tôi
+        </span>
+        <h1 class="display-6 font-serif fw-bold mb-2" style="color: var(--nn-plum-text);">Liên Hệ TN Tea</h1>
+        <div class="sakura-divider"></div>
+        <p class="text-secondary mx-auto mb-0" style="max-width: 650px; font-size: 0.95rem; line-height: 1.7;">
+            Chúng tôi luôn lắng nghe mọi chia sẻ, đóng góp ý kiến cũng như sẵn sàng phục vụ các đơn đặt tiệc trà sữa cho sự kiện của bạn.
+        </p>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row g-5">
+        <!-- CỘT TRÁI: THÔNG TIN LIÊN HỆ -->
+        <div class="col-lg-5">
+            <div class="card border-0 rounded-4 shadow-sm p-4 h-100" style="background: linear-gradient(180deg, #FFFFFF 0%, #FFF5F7 100%); border: 1px solid var(--nn-card-border);">
+                <h4 class="font-serif fw-bold mb-4" style="color: var(--nn-plum-text);">
+                    <i class="bi bi-geo-alt-fill text-danger me-2"></i>Hệ Thống Cửa Hàng
+                </h4>
+
+                <div class="d-flex gap-3 mb-4">
+                    <div class="contact-icon-box">
+                        <i class="bi bi-shop fs-4" style="color: var(--nn-deep-rose);"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Cửa Hàng Flagship Quận 1</h6>
+                        <p class="text-secondary small mb-0">123 Phố Trà Sữa, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh</p>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3 mb-4">
+                    <div class="contact-icon-box">
+                        <i class="bi bi-telephone-fill fs-4" style="color: var(--nn-deep-rose);"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Hotline Đặt Hàng & Khiếu Nại</h6>
+                        <p class="text-secondary small mb-0"><strong>1900 6868</strong> (Cước gọi 1.000đ/phút)</p>
+                        <small class="text-muted">Hỗ trợ từ 8:00 đến 22:30 mỗi ngày</small>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3 mb-4">
+                    <div class="contact-icon-box">
+                        <i class="bi bi-envelope-fill fs-4" style="color: var(--nn-deep-rose);"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Hòm Thư Điện Tử</h6>
+                        <p class="text-secondary small mb-0">contact@tntea.vn • support@tntea.vn</p>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3 mb-4">
+                    <div class="contact-icon-box">
+                        <i class="bi bi-clock-fill fs-4" style="color: var(--nn-deep-rose);"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Giờ Mở Cửa Phục Vụ</h6>
+                        <p class="text-secondary small mb-0">Thứ Hai - Chủ Nhật: <strong>08:00 - 22:30</strong></p>
+                        <small class="text-success fw-semibold"><i class="bi bi-dot"></i> Đang mở cửa đón khách</small>
+                    </div>
+                </div>
+
+                <hr class="my-3 text-secondary opacity-25" />
+
+                <h6 class="fw-bold mb-3" style="color: var(--nn-plum-text);">Theo dõi TN Tea trên mạng xã hội:</h6>
+                <div class="d-flex gap-3 fs-4" style="color: var(--nn-deep-rose);">
+                    <a href="#" class="text-reset"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="text-reset"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="text-reset"><i class="bi bi-tiktok"></i></a>
+                    <a href="#" class="text-reset"><i class="bi bi-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- CỘT PHẢI: FORM GỬI TIN NHẮN -->
+        <div class="col-lg-7">
+            <div class="card border-0 rounded-4 shadow-sm p-4 p-md-5" style="background: #FFFFFF; border: 1px solid var(--nn-card-border);">
+                <h4 class="font-serif fw-bold mb-2" style="color: var(--nn-plum-text);">Gửi Tin Nhắn Cho TN Tea</h4>
+                <p class="text-secondary small mb-4">Để lại thông tin bên dưới, nhân viên hỗ trợ của TN Tea sẽ phản hồi bạn trong thời gian sớm nhất.</p>
+
+                <form asp-action="Contact" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small text-secondary">Họ và tên <span class="text-danger">*</span></label>
+                            <input type="text" name="fullName" class="form-control rounded-3 py-2 shadow-none" placeholder="Ví dụ: Nguyễn Thảo Vy" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small text-secondary">Số điện thoại <span class="text-danger">*</span></label>
+                            <input type="tel" name="phone" class="form-control rounded-3 py-2 shadow-none" placeholder="Ví dụ: 0901 234 567" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small text-secondary">Địa chỉ Email</label>
+                            <input type="email" name="email" class="form-control rounded-3 py-2 shadow-none" placeholder="name@example.com" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small text-secondary">Nhu cầu liên hệ</label>
+                            <select name="subject" class="form-select rounded-3 py-2 shadow-none">
+                                <option value="dat-tiec">Đặt tiệc trà sữa số lượng lớn</option>
+                                <option value="gop-y">Góp ý chất lượng phục vụ</option>
+                                <option value="hop-tac">Hợp tác kinh doanh / Nhượng quyền</option>
+                                <option value="khac">Vấn đề khác</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold small text-secondary">Nội dung tin nhắn</label>
+                            <textarea name="message" rows="4" class="form-control rounded-3 shadow-none" placeholder="Nhập chi tiết yêu cầu hoặc phản hồi của bạn..."></textarea>
+                        </div>
+                        <div class="col-12 mt-4">
+                            <button type="submit" class="btn btn-sakura-primary w-100 py-3 fw-bold rounded-pill shadow-sm">
+                                <i class="bi bi-send-fill me-2"></i> Gửi Tin Nhắn Ngay
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

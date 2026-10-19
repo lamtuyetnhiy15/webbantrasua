@@ -1,0 +1,41 @@
+@{
+    ViewData["Title"] = "Không Có Quyền Truy Cập - TN Tea";
+}
+
+<div class="container my-5 py-5">
+    <div class="row justify-content-center">
+        <div class="col-11 col-sm-9 col-md-7 col-lg-5 text-center">
+            <div class="card border-0 p-5 shadow-sm rounded-4" style="background: #FFFFFF; border: 1px solid rgba(244, 166, 178, 0.4); box-shadow: 0 10px 30px rgba(238, 134, 152, 0.12) !important;">
+                <div class="mb-4">
+                    <div class="d-inline-flex justify-content-center align-items-center rounded-circle" 
+                         style="width: 90px; height: 90px; background-color: #FDE8EA; color: #EE8698;">
+                        <i class="bi bi-shield-x display-4"></i>
+                    </div>
+                </div>
+
+                <span class="badge rounded-pill px-3 py-1 mb-3 mx-auto" 
+                      style="background-color: #FDE8EA; color: #D25C70; font-weight: 700; font-size: 0.75rem; letter-spacing: 1.5px;">
+                    ACCESS DENIED (403)
+                </span>
+
+                <h2 class="font-serif fw-bold mb-3" style="color: #4A202A; font-family: 'Playfair Display', Georgia, serif;">
+                    Không Có Quyền Truy Cập
+                </h2>
+
+                <p class="text-secondary mb-4" style="line-height: 1.6;">
+                    Rất tiếc! Khu vực này chỉ dành riêng cho <strong>Quản trị viên (Admin)</strong> của TN Tea. Tài khoản của bạn hiện là Khách hàng và không có quyền hạn truy cập trang này.
+                </p>
+
+                <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
+                    <a asp-controller="Product" asp-action="Index" class="btn text-white rounded-pill px-4 py-2 fw-semibold shadow-sm" 
+                       style="background: linear-gradient(135deg, #EE8698 0%, #E87A90 100%); border: none;">
+                        <i class="bi bi-cup-straw me-1"></i> Quay Về Menu
+                    </a>
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-outline-secondary rounded-pill px-4 py-2 fw-semibold">
+                        <i class="bi bi-person-circle me-1"></i> Đổi Tài Khoản
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

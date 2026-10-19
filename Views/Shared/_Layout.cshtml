@@ -58,12 +58,9 @@
                     <!-- Cụm góc phải: Giỏ hàng (hình tròn như VV.png) & Đăng nhập -->
                     <div class="d-flex align-items-center gap-3">
                         <!-- Nút Giỏ hàng hình tròn chuẩn thiết kế VV.png -->
-                        <a asp-controller="Cart" asp-action="Index" class="btn-cart-circle" title="Xem giỏ hàng">
+                        <a asp-controller="Cart" asp-action="Index" class="btn-cart-circle" id="globalCartBtn" title="Xem giỏ hàng">
                             <i class="bi bi-cart3"></i>
-                            @if (totalCartCount > 0)
-                            {
-                                <span class="cart-counter-badge">@totalCartCount</span>
-                            }
+                            <span class="cart-counter-badge @(totalCartCount > 0 ? "" : "d-none")" id="globalCartBadge">@(totalCartCount > 0 ? totalCartCount.ToString() : "0")</span>
                         </a>
 
                         <!-- Tài khoản & Xác thực -->
@@ -90,27 +87,36 @@
                                     
                                     @if (isAdmin)
                                     {
+                                        var isAdminDashboard = currentCtrl == "Admin" && currentAct == "Index";
+                                        var isAdminProducts = currentCtrl == "Admin" && (currentAct == "Products" || currentAct == "CreateProduct" || currentAct == "EditProduct");
+                                        var isAdminOrders = currentCtrl == "Admin" && currentAct == "Orders";
+
                                         <li>
-                                            <a class="dropdown-item py-2 fw-semibold" asp-controller="Admin" asp-action="Index" style="color: var(--nn-deep-rose);">
-                                                <i class="bi bi-speedometer2 me-2"></i>Trang Quản Trị (Dashboard)
+                                            <a class="dropdown-item py-2 @(isAdminDashboard ? "fw-semibold" : "")" asp-controller="Admin" asp-action="Index"
+                                               style="@(isAdminDashboard ? "color: var(--nn-deep-rose); background-color: #FFF0F3;" : "")">
+                                                <i class="bi bi-speedometer2 me-2 @(isAdminDashboard ? "" : "text-muted")"></i>Trang Quản Trị (Dashboard)
                                             </a>
                                         </li>
                                         <li>
-                                            <a class="dropdown-item py-2" asp-controller="Admin" asp-action="Products">
-                                                <i class="bi bi-cup-hot me-2 text-muted"></i>Quản lý Sản phẩm
+                                            <a class="dropdown-item py-2 @(isAdminProducts ? "fw-semibold" : "")" asp-controller="Admin" asp-action="Products"
+                                               style="@(isAdminProducts ? "color: var(--nn-deep-rose); background-color: #FFF0F3;" : "")">
+                                                <i class="bi bi-cup-hot me-2 @(isAdminProducts ? "" : "text-muted")"></i>Quản lý Sản phẩm
                                             </a>
                                         </li>
                                         <li>
-                                            <a class="dropdown-item py-2" asp-controller="Admin" asp-action="Orders">
-                                                <i class="bi bi-receipt me-2 text-muted"></i>Quản lý Đơn hàng
+                                            <a class="dropdown-item py-2 @(isAdminOrders ? "fw-semibold" : "")" asp-controller="Admin" asp-action="Orders"
+                                               style="@(isAdminOrders ? "color: var(--nn-deep-rose); background-color: #FFF0F3;" : "")">
+                                                <i class="bi bi-receipt me-2 @(isAdminOrders ? "" : "text-muted")"></i>Quản lý Đơn hàng
                                             </a>
                                         </li>
                                     }
                                     else
                                     {
+                                        var isMyOrders = currentCtrl == "Order" && currentAct == "MyOrders";
                                         <li>
-                                            <a class="dropdown-item py-2 fw-semibold" asp-controller="Order" asp-action="MyOrders" style="color: var(--nn-deep-rose);">
-                                                <i class="bi bi-bag-check me-2"></i>Lịch sử đơn hàng của tôi
+                                            <a class="dropdown-item py-2 @(isMyOrders ? "fw-semibold" : "")" asp-controller="Order" asp-action="MyOrders"
+                                               style="@(isMyOrders ? "color: var(--nn-deep-rose); background-color: #FFF0F3;" : "")">
+                                                <i class="bi bi-bag-check me-2 @(isMyOrders ? "" : "text-muted")"></i>Lịch sử đơn hàng của tôi
                                             </a>
                                         </li>
                                     }
@@ -139,6 +145,9 @@
 
     <!-- Nội dung chính -->
     <main role="main">
+        <!-- Container thông báo động realtime -->
+        <div id="liveAlertPlaceholder" class="container my-2"></div>
+
         <!-- Flash Alert Thông báo -->
         @if (TempData["SuccessMessage"] != null || TempData["ErrorMessage"] != null)
         {
@@ -158,6 +167,23 @@
                     </div>
                 }
             </div>
+            <script>
+                setTimeout(function () {
+                    var alerts = document.querySelectorAll('.alert-dismissible');
+                    alerts.forEach(function (alertEl) {
+                        alertEl.style.transition = 'opacity 0.6s ease, max-height 0.6s ease, margin 0.6s ease, padding 0.6s ease';
+                        alertEl.style.opacity = '0';
+                        setTimeout(function () {
+                            if (typeof bootstrap !== 'undefined' && bootstrap.Alert) {
+                                var bsAlert = bootstrap.Alert.getOrCreateInstance(alertEl);
+                                bsAlert.close();
+                            } else {
+                                alertEl.remove();
+                            }
+                        }, 600);
+                    });
+                }, 5000); // Tự biến mất sau 5s
+            </script>
         }
 
         @RenderBody()

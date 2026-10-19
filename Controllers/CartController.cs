@@ -37,13 +37,17 @@ public class CartController : Controller
     }
 
     // POST & GET: /Cart/AddToCart/5
-    public async Task<IActionResult> AddToCart(int id, int quantity = 1)
+    public async Task<IActionResult> AddToCart(int id, int quantity = 1, string? returnUrl = null)
     {
         if (quantity <= 0) quantity = 1;
 
         var product = await _context.Products.FindAsync(id);
         if (product == null)
         {
+            if (IsAjaxRequest())
+            {
+                return Json(new { success = false, message = "Không tìm thấy món." });
+            }
             return NotFound();
         }
 
@@ -67,9 +71,45 @@ public class CartController : Controller
         }
 
         SaveCart(cart);
-        TempData["SuccessMessage"] = $"Đã thêm \"{product.Name}\" vào giỏ hàng!";
+        var successMessage = $"Đã thêm \"{product.Name}\" vào giỏ hàng!";
+        TempData["SuccessMessage"] = successMessage;
+
+        var totalCount = cart.Sum(c => c.Quantity);
+
+        if (IsAjaxRequest())
+        {
+            return Json(new
+            {
+                success = true,
+                message = successMessage,
+                cartCount = totalCount,
+                productName = product.Name
+            });
+        }
+
+        // Ưu tiên 1: Chuyển hướng theo returnUrl nếu hợp lệ
+        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+        {
+            return Redirect(returnUrl);
+        }
+
+        // Ưu tiên 2: Chuyển hướng quay lại trang trước đó (Referer header)
+        var referer = Request.Headers["Referer"].ToString();
+        if (!string.IsNullOrEmpty(referer) && Uri.TryCreate(referer, UriKind.Absolute, out var refererUri))
+        {
+            if (string.Equals(refererUri.Host, Request.Host.Host, StringComparison.OrdinalIgnoreCase))
+            {
+                return Redirect(referer);
+            }
+        }
 
         return RedirectToAction("Index");
+    }
+
+    private bool IsAjaxRequest()
+    {
+        return Request.Headers["X-Requested-With"] == "XMLHttpRequest"
+            || Request.Headers["Accept"].ToString().Contains("application/json");
     }
 
     // POST & GET: /Cart/RemoveFromCart/5
@@ -83,6 +123,26 @@ public class CartController : Controller
             cart.Remove(itemToRemove);
             SaveCart(cart);
             TempData["SuccessMessage"] = $"Đã xóa sản phẩm khỏi giỏ hàng.";
+        }
+
+        return RedirectToAction("Index");
+    }
+
+    // POST & GET: /Cart/UpdateQuantity/5?delta=1 hoặc delta=-1
+    public IActionResult UpdateQuantity(int id, int delta)
+    {
+        var cart = GetCart();
+        var item = cart.FirstOrDefault(c => c.ProductId == id);
+
+        if (item != null)
+        {
+            item.Quantity += delta;
+            if (item.Quantity <= 0)
+            {
+                cart.Remove(item);
+                TempData["SuccessMessage"] = $"Đã xóa món \"{item.ProductName}\" khỏi giỏ hàng.";
+            }
+            SaveCart(cart);
         }
 
         return RedirectToAction("Index");

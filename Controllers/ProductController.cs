@@ -23,56 +23,56 @@ public class ProductController : Controller
     // GET: /Product/Menu
     public async Task<IActionResult> Menu(string? category, string? search, int page = 1)
     {
-        var query = _context.Products.AsQueryable();
+        // 1. Tải danh mục thực tế từ Database để đồng bộ với trang quản lý
+        var dbCategories = await _context.Categories.OrderBy(c => c.Id).ToListAsync();
+        ViewBag.Categories = dbCategories;
 
-        if (!string.IsNullOrWhiteSpace(search))
+        var allProducts = await _context.Products.ToListAsync();
+        IEnumerable<Product> filtered = allProducts;
+
+        // 1. Tìm kiếm theo từ khóa thông minh (hỗ trợ tiếng Việt có dấu, không dấu, hoa thường)
+        bool hasSearch = !string.IsNullOrWhiteSpace(search);
+        if (hasSearch)
         {
-            var searchLower = search.Trim().ToLower();
-            query = query.Where(p => p.Name.ToLower().Contains(searchLower) || 
-                                     p.Description.ToLower().Contains(searchLower));
+            var s = search!.Trim();
+            filtered = filtered.Where(p => 
+                WebTraSua.Helpers.SearchHelper.MatchesSearch(p.Name, s) ||
+                WebTraSua.Helpers.SearchHelper.MatchesSearch(p.Description, s) ||
+                WebTraSua.Helpers.SearchHelper.MatchesSearch(p.Badge, s) ||
+                WebTraSua.Helpers.SearchHelper.MatchesSearch(p.Category, s)
+            );
         }
 
+        // 2. Lọc theo danh mục
         if (!string.IsNullOrWhiteSpace(category) && category != "all")
         {
-            if (category == "trasua" || category == "damhuong")
+            var catFiltered = FilterByCategory(filtered, category);
+            // Nếu đang tìm kiếm mà danh mục hiện tại không có, nhưng các danh mục khác có món phù hợp,
+            // tự động chuyển category về 'all' để khách hàng thấy món
+            if (hasSearch && !catFiltered.Any() && filtered.Any())
             {
-                query = query.Where(p => p.Category == "Trà Sữa Đậm Hương" || (string.IsNullOrEmpty(p.Category) && p.Name.Contains("Trà Sữa")));
-            }
-            else if (category == "truyenthong")
-            {
-                query = query.Where(p => p.Category == "Trà Sữa Truyền Thống" || (string.IsNullOrEmpty(p.Category) && (p.Name.Contains("Truyền Thống") || p.Name.Contains("Đường Đen") || p.Name.Contains("Assam"))));
-            }
-            else if (category == "cheese")
-            {
-                query = query.Where(p => p.Category == "Cheese & Matcha" || (string.IsNullOrEmpty(p.Category) && (p.Name.Contains("Cheese") || p.Name.Contains("Matcha") || p.Name.Contains("Kem"))));
-            }
-            else if (category == "tratraicay")
-            {
-                query = query.Where(p => p.Category == "Trà Trái Cây Tươi Mát" || (string.IsNullOrEmpty(p.Category) && (p.Name.Contains("Trái Cây") || p.Name.Contains("Đào") || p.Name.Contains("Dâu") || p.Name.Contains("Vải"))));
-            }
-            else if (category == "topping")
-            {
-                query = query.Where(p => p.Category == "Topping & Món Khác");
+                category = "all";
             }
             else
             {
-                query = query.Where(p => p.Category == category);
+                filtered = catFiltered;
             }
         }
 
+        var resultList = filtered.OrderBy(p => p.ProductId).ToList();
+
         const int pageSize = 12;
-        int totalItems = await query.CountAsync();
+        int totalItems = resultList.Count;
         int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
         if (totalPages < 1) totalPages = 1;
 
         if (page < 1) page = 1;
         if (page > totalPages) page = totalPages;
 
-        var products = await query
-            .OrderBy(p => p.ProductId)
+        var products = resultList
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .ToListAsync();
+            .ToList();
 
         ViewBag.SelectedCategory = category ?? "all";
         ViewBag.SearchTerm = search ?? "";
@@ -80,9 +80,72 @@ public class ProductController : Controller
         ViewBag.TotalPages = totalPages;
         ViewBag.TotalItems = totalItems;
         ViewBag.PageSize = pageSize;
-        ViewBag.TotalAllItems = await _context.Products.CountAsync();
+        ViewBag.TotalAllItems = allProducts.Count;
 
         return View(products);
+    }
+
+    private static IEnumerable<Product> FilterByCategory(IEnumerable<Product> source, string category)
+    {
+        // Ưu tiên 1: Khớp chính xác tên mục lục
+        var exact = source.Where(p => string.Equals(p.Category, category, StringComparison.OrdinalIgnoreCase));
+        if (exact.Any())
+        {
+            return exact;
+        }
+
+        // Ưu tiên 2: Hỗ trợ alias khóa ngắn gọn
+        if (category == "trasua" || category == "damhuong")
+        {
+            return source.Where(p => p.Category == "Trà Sữa Đậm Hương" || (string.IsNullOrEmpty(p.Category) && p.Name.Contains("Trà Sữa", StringComparison.OrdinalIgnoreCase)));
+        }
+        if (category == "truyenthong")
+        {
+            return source.Where(p => p.Category == "Trà Sữa Truyền Thống" || (string.IsNullOrEmpty(p.Category) && (p.Name.Contains("Truyền Thống", StringComparison.OrdinalIgnoreCase) || p.Name.Contains("Đường Đen", StringComparison.OrdinalIgnoreCase) || p.Name.Contains("Assam", StringComparison.OrdinalIgnoreCase))));
+        }
+        if (category == "cheese")
+        {
+            return source.Where(p => p.Category == "Cheese & Matcha" || (string.IsNullOrEmpty(p.Category) && (p.Name.Contains("Cheese", StringComparison.OrdinalIgnoreCase) || p.Name.Contains("Matcha", StringComparison.OrdinalIgnoreCase) || p.Name.Contains("Kem", StringComparison.OrdinalIgnoreCase))));
+        }
+        if (category == "tratraicay")
+        {
+            return source.Where(p => p.Category == "Trà Trái Cây Tươi Mát" || p.Category == "Trà Trái Cây" || (string.IsNullOrEmpty(p.Category) && (p.Name.Contains("Trái Cây", StringComparison.OrdinalIgnoreCase) || p.Name.Contains("Đào", StringComparison.OrdinalIgnoreCase) || p.Name.Contains("Dâu", StringComparison.OrdinalIgnoreCase) || p.Name.Contains("Vải", StringComparison.OrdinalIgnoreCase))));
+        }
+        if (category == "topping")
+        {
+            return source.Where(p => p.Category == "Topping & Món Khác");
+        }
+        return source.Where(p => string.Equals(p.Category, category, StringComparison.OrdinalIgnoreCase));
+    }
+
+    // GET: /Product/SearchSuggestions?term=...
+    [HttpGet]
+    public async Task<IActionResult> SearchSuggestions(string? term)
+    {
+        if (string.IsNullOrWhiteSpace(term))
+            return Json(new List<object>());
+
+        var s = term.Trim();
+        var all = await _context.Products.ToListAsync();
+        var matches = all
+            .Where(p => 
+                WebTraSua.Helpers.SearchHelper.MatchesSearch(p.Name, s) || 
+                WebTraSua.Helpers.SearchHelper.MatchesSearch(p.Badge, s) || 
+                WebTraSua.Helpers.SearchHelper.MatchesSearch(p.Category, s)
+            )
+            .Take(6)
+            .Select(p => new
+            {
+                id = p.ProductId,
+                name = p.Name,
+                price = p.Price.ToString("N0") + " đ",
+                imageUrl = p.ImageUrl,
+                category = p.Category,
+                badge = p.Badge
+            })
+            .ToList();
+
+        return Json(matches);
     }
 
     // GET: /Product/Details/5

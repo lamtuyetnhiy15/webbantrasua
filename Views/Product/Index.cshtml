@@ -28,18 +28,12 @@
         <p class="text-secondary">Trải nghiệm hương vị trà sữa đậm hương thanh mát chuẩn phong cách hoàng gia</p>
     </div>
 
-    <!-- Thanh tiện ích: Nút xem giỏ hàng -->
-    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
-        <div>
-            <h5 class="fw-bold mb-0" style="color: var(--nn-plum-text);">
-                <i class="bi bi-cup-straw text-danger me-2"></i>Món Ngon Tuyển Chọn
-            </h5>
-            <small class="text-muted">Chọn ly trà sữa yêu thích của bạn ngay hôm nay</small>
-        </div>
-        <a asp-controller="Cart" asp-action="Index" class="btn btn-sakura-outline d-flex align-items-center gap-2">
-            <i class="bi bi-bag-check-fill text-danger"></i>
-            <span>Xem giỏ hàng</span>
-        </a>
+    <!-- Tiêu đề danh mục món -->
+    <div class="mb-4 pb-2 border-bottom">
+        <h5 class="fw-bold mb-0" style="color: var(--nn-plum-text);">
+            <i class="bi bi-cup-straw text-danger me-2"></i>Món Ngon Tuyển Chọn
+        </h5>
+        <small class="text-muted">Chọn ly trà sữa yêu thích của bạn ngay hôm nay</small>
     </div>
 
     <!-- Danh sách sản phẩm dạng lưới (Grid 4 cột) -->
@@ -50,10 +44,13 @@
             {
                 <div class="col">
                     <div class="card h-100 sakura-card">
-                        <!-- Nhãn Tag Best Seller -->
-                        <span class="sakura-tag">
-                            <i class="bi bi-stars me-1"></i>Tn Signature
-                        </span>
+                        @if (!string.IsNullOrWhiteSpace(item.Badge))
+                        {
+                            <!-- Nhãn Tag trên ảnh -->
+                            <span class="sakura-tag">
+                                <i class="bi bi-stars me-1"></i>@item.Badge
+                            </span>
+                        }
 
                         <!-- Hình ảnh sản phẩm -->
                         <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId" class="text-decoration-none overflow-hidden">
@@ -83,7 +80,10 @@
                                 </div>
 
                                 <div class="d-grid gap-2">
-                                    <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@item.ProductId" class="btn btn-sakura-primary text-center">
+                                    <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@item.ProductId" 
+                                       asp-route-returnUrl="@Context.Request.Path@Context.Request.QueryString" 
+                                       class="btn btn-sakura-primary text-center btn-add-cart-ajax" 
+                                       data-id="@item.ProductId" data-name="@item.Name">
                                         <i class="bi bi-cart-plus me-1"></i> Cho vào giỏ hàng
                                     </a>
                                 </div>

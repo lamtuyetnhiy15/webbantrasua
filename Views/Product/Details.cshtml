@@ -33,9 +33,12 @@
                     <span class="badge rounded-pill px-3 py-2 text-uppercase" style="background-color: var(--nn-soft-pink); color: var(--nn-deep-rose); font-weight: 700; font-size: 0.75rem;">
                         <i class="bi bi-tag-fill me-1"></i>@(string.IsNullOrWhiteSpace(Model.Category) ? "Trà Sữa Cao Cấp" : Model.Category)
                     </span>
-                    <span class="badge rounded-pill px-3 py-2 text-uppercase" style="background-color: #FFF0F2; color: #7A3545; font-weight: 600; font-size: 0.75rem; border: 1px solid rgba(244,166,178,0.4);">
-                        TN Signature
-                    </span>
+                    @if (!string.IsNullOrWhiteSpace(Model.Badge))
+                    {
+                        <span class="badge rounded-pill px-3 py-2 text-uppercase" style="background-color: #FFF0F2; color: #7A3545; font-weight: 600; font-size: 0.75rem; border: 1px solid rgba(244,166,178,0.4);">
+                            <i class="bi bi-stars me-1 text-danger"></i>@Model.Badge
+                        </span>
+                    }
                 </div>
 
                 <h1 class="font-serif fw-bold mb-3 display-6" style="color: var(--nn-plum-text);">@Model.Name</h1>
@@ -54,10 +57,11 @@
                     <p class="mb-0 text-secondary" style="line-height: 1.8;">@Model.Description</p>
                 </div>
 
-                <!-- Cụm nút chức năng: Cho vào giỏ hàng (POST form) và Xem giỏ hàng -->
+                <!-- Cụm nút chức năng: Cho vào giỏ hàng -->
                 <div class="d-flex flex-wrap align-items-center gap-3 pt-2">
-                    <form asp-controller="Cart" asp-action="AddToCart" method="post" class="d-flex align-items-center gap-2">
+                    <form asp-controller="Cart" asp-action="AddToCart" method="post" class="d-flex align-items-center gap-2 form-add-cart-ajax">
                         <input type="hidden" name="id" value="@Model.ProductId" />
+                        <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
                         <div class="input-group" style="width: 130px;">
                             <span class="input-group-text bg-white border-end-0 fw-semibold" style="border-color: var(--nn-card-border); color: var(--nn-sub-text);">SL</span>
                             <input type="number" name="quantity" class="form-control text-center fw-bold" value="1" min="1" max="99" style="border-color: var(--nn-card-border);" />
@@ -66,10 +70,6 @@
                             <i class="bi bi-cart-plus me-1"></i> Cho vào giỏ hàng
                         </button>
                     </form>
-
-                    <a asp-controller="Cart" asp-action="Index" class="btn btn-sakura-outline">
-                        <i class="bi bi-cart3 me-1"></i> Xem giỏ hàng
-                    </a>
                 </div>
 
                 <div class="mt-4 pt-3 border-top d-flex gap-4 text-muted small">

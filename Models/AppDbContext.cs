@@ -15,6 +15,7 @@ public class AppDbContext : DbContext
     public DbSet<BrandStoryMilestone> BrandStoryMilestones { get; set; } = null!;
     public DbSet<CraftingStep> CraftingSteps { get; set; } = null!;
     public DbSet<NewsArticle> NewsArticles { get; set; } = null!;
+    public DbSet<Category> Categories { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

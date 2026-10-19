@@ -5,20 +5,56 @@
     var selectedCat = (string?)ViewBag.SelectedCategory ?? "all";
     var searchTerm = (string?)ViewBag.SearchTerm ?? "";
 
-    // Danh sách các danh mục sản phẩm
+    var dbCategories = ViewBag.Categories as List<WebTraSua.Models.Category>;
+
+    // Danh sách các danh mục sản phẩm (Đồng bộ trực tiếp với Database & Trang Quản Lý)
     var categories = new List<(string Key, string Name, string Icon)>
     {
-        ("all", "Tất Cả Sản Phẩm", "bi bi-grid-fill"),
-        ("trasua", "Trà Sữa Đậm Hương", "bi bi-cup-hot-fill"),
-        ("truyenthong", "Trà Sữa Truyền Thống", "bi bi-cup-straw"),
-        ("cheese", "Cheese & Matcha", "bi bi-stars"),
-        ("tratraicay", "Trà Trái Cây", "bi bi-flower1"),
-        ("topping", "Topping & Món Khác", "bi bi-plus-circle")
+        ("all", "Tất Cả Sản Phẩm", "bi bi-grid-fill")
     };
 
+    if (dbCategories != null && dbCategories.Any())
+    {
+        foreach (var cat in dbCategories)
+        {
+            string icon = "bi bi-cup-straw";
+            var lower = cat.Name.ToLower();
+            if (lower.Contains("đậm hương") || lower.Contains("dam huong"))
+                icon = "bi bi-cup-hot-fill";
+            else if (lower.Contains("truyền thống") || lower.Contains("truyen thong") || lower.Contains("đường đen"))
+                icon = "bi bi-cup-straw";
+            else if (lower.Contains("cheese") || lower.Contains("matcha") || lower.Contains("kem"))
+                icon = "bi bi-stars";
+            else if (lower.Contains("trái cây") || lower.Contains("trai cay") || lower.Contains("hoa") || lower.Contains("đào") || lower.Contains("dâu") || lower.Contains("vải"))
+                icon = "bi bi-flower1";
+            else if (lower.Contains("topping") || lower.Contains("món khác"))
+                icon = "bi bi-plus-circle";
+            else if (lower.Contains("cà phê") || lower.Contains("cafe"))
+                icon = "bi bi-cup-hot";
+
+            categories.Add((cat.Name, cat.Name, icon));
+        }
+    }
+    else
+    {
+        // Fallback danh mục cơ bản nếu database chưa có
+        categories.Add(("Trà Sữa Đậm Hương", "Trà Sữa Đậm Hương", "bi bi-cup-hot-fill"));
+        categories.Add(("Trà Sữa Truyền Thống", "Trà Sữa Truyền Thống", "bi bi-cup-straw"));
+        categories.Add(("Cheese & Matcha", "Cheese & Matcha", "bi bi-stars"));
+        categories.Add(("Topping & Món Khác", "Topping & Món Khác", "bi bi-plus-circle"));
+    }
+
     var currentCatKey = selectedCat;
-    var currentCat = categories.FirstOrDefault(c => c.Key == currentCatKey);
-    var currentCatName = currentCat.Name != null ? currentCat.Name : "Tất Cả Sản Phẩm";
+    var currentCat = categories.FirstOrDefault(c => 
+        string.Equals(c.Key, currentCatKey, StringComparison.OrdinalIgnoreCase) ||
+        (currentCatKey == "trasua" && c.Name.Contains("Đậm Hương", StringComparison.OrdinalIgnoreCase)) ||
+        (currentCatKey == "damhuong" && c.Name.Contains("Đậm Hương", StringComparison.OrdinalIgnoreCase)) ||
+        (currentCatKey == "truyenthong" && c.Name.Contains("Truyền Thống", StringComparison.OrdinalIgnoreCase)) ||
+        (currentCatKey == "cheese" && c.Name.Contains("Cheese", StringComparison.OrdinalIgnoreCase)) ||
+        (currentCatKey == "tratraicay" && c.Name.Contains("Trái Cây", StringComparison.OrdinalIgnoreCase)) ||
+        (currentCatKey == "topping" && c.Name.Contains("Topping", StringComparison.OrdinalIgnoreCase))
+    );
+    var currentCatName = !string.IsNullOrEmpty(currentCat.Name) ? currentCat.Name : "Tất Cả Sản Phẩm";
 }
 
 <div class="menu-hero-section position-relative overflow-hidden mb-4">
@@ -37,19 +73,29 @@
 <div class="container mb-5">
     <!-- THANH CÔNG CỤ TÌM KIẾM & DANH MỤC NHỎ GỌN -->
     <div class="card border-0 rounded-pill shadow-sm px-3 py-2 mb-4 d-flex flex-row justify-content-between align-items-center flex-wrap gap-2" style="background: #FFFFFF; border: 1px solid var(--nn-card-border) !important;">
-        <!-- Form tìm kiếm nhỏ gọn -->
-        <form asp-controller="Product" asp-action="Menu" method="get" class="d-flex" style="width: 320px; max-width: 100%;">
+        <!-- Form tìm kiếm thông minh có gợi ý trực tiếp -->
+        <form asp-controller="Product" asp-action="Menu" method="get" class="d-flex position-relative" id="menuSearchForm" style="width: 340px; max-width: 100%;">
             <input type="hidden" name="category" value="@selectedCat" />
             <div class="input-group">
                 <span class="input-group-text bg-transparent border-end-0 rounded-start-pill text-muted ps-3 py-1">
                     <i class="bi bi-search small text-danger"></i>
                 </span>
-                <input type="text" name="search" value="@searchTerm" 
+                <input type="text" name="search" id="menuSearchInput" value="@searchTerm" 
                        class="form-control border-start-0 border-end-0 py-1 shadow-none" 
                        style="font-size: 0.875rem; background: transparent;" 
-                       placeholder="Tìm món trà sữa..." />
+                       placeholder="Tìm món trà sữa..." autocomplete="off" />
+                @if (!string.IsNullOrWhiteSpace(searchTerm))
+                {
+                    <a asp-action="Menu" asp-route-category="@selectedCat" class="input-group-text bg-transparent border-start-0 border-end-0 text-muted pe-2 py-1 text-decoration-none" title="Xóa tìm kiếm">
+                        <i class="bi bi-x-circle-fill text-secondary small"></i>
+                    </a>
+                }
                 <button class="btn btn-sakura-primary rounded-end-pill px-3 py-1" 
                         style="font-size: 0.825rem;" type="submit">Tìm</button>
+            </div>
+            <!-- Popup gợi ý kết quả tìm kiếm trực tiếp -->
+            <div id="searchSuggestionsBox" class="dropdown-menu shadow-lg border-0 rounded-4 p-2 w-100 position-absolute" 
+                 style="display: none; top: calc(100% + 6px); left: 0; z-index: 1060; max-height: 360px; overflow-y: auto;">
             </div>
         </form>
 
@@ -94,13 +140,26 @@
         </div>
     </div>
 
+    <!-- THÔNG BÁO KẾT QUẢ TÌM KIẾM NẾU CÓ -->
+    @if (!string.IsNullOrWhiteSpace(searchTerm))
+    {
+        <div class="d-flex align-items-center justify-content-between mb-3 px-2 flex-wrap gap-2">
+            <span class="text-secondary small">
+                <i class="bi bi-search me-1 text-danger"></i> Kết quả tìm kiếm cho: <strong class="text-danger">"@searchTerm"</strong> (Tìm thấy @ViewBag.TotalItems món)
+            </span>
+            <a asp-action="Menu" asp-route-category="@selectedCat" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1" style="font-size: 0.78rem;">
+                <i class="bi bi-x-circle me-1"></i> Xóa tìm kiếm
+            </a>
+        </div>
+    }
+
     <!-- DANH SÁCH MÓN TRÀ SỮA -->
     @if (!Model.Any())
     {
         <div class="text-center py-5">
             <div class="display-1 text-muted mb-3"><i class="bi bi-cup-straw"></i></div>
             <h4 class="text-secondary fw-semibold">Chưa tìm thấy món trà sữa phù hợp</h4>
-            <p class="text-muted small">Hãy thử tìm kiếm với từ khóa khác hoặc chọn danh mục "Tất Cả".</p>
+            <p class="text-muted small">Hãy thử tìm kiếm với từ khóa khác (ví dụ: Thái đỏ, Oolong, Matcha...) hoặc chọn danh mục "Tất Cả".</p>
             <a asp-action="Menu" class="btn btn-sakura-primary rounded-pill px-4 mt-2">Xem Tất Cả Menu</a>
         </div>
     }
@@ -111,10 +170,13 @@
             {
                 <div class="col">
                     <div class="card h-100 sakura-card">
-                        <!-- Nhãn Tag Danh mục -->
-                        <span class="sakura-tag">
-                            <i class="bi bi-tag-fill me-1"></i>@(string.IsNullOrWhiteSpace(item.Category) ? "TN Signature" : item.Category)
-                        </span>
+                        @if (!string.IsNullOrWhiteSpace(item.Badge))
+                        {
+                            <!-- Nhãn Tag trên ảnh -->
+                            <span class="sakura-tag">
+                                <i class="bi bi-stars me-1"></i>@item.Badge
+                            </span>
+                        }
 
                         <!-- Hình ảnh món -->
                         <a asp-action="Details" asp-route-id="@item.ProductId" class="text-decoration-none overflow-hidden">
@@ -143,7 +205,10 @@
                                 </div>
 
                                 <div class="d-grid gap-2">
-                                    <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@item.ProductId" class="btn btn-sakura-primary text-center">
+                                    <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@item.ProductId" 
+                                       asp-route-returnUrl="@Context.Request.Path@Context.Request.QueryString" 
+                                       class="btn btn-sakura-primary text-center btn-add-cart-ajax" 
+                                       data-id="@item.ProductId" data-name="@item.Name">
                                         <i class="bi bi-cart-plus me-1"></i> Cho vào giỏ hàng
                                     </a>
                                 </div>
@@ -198,3 +263,85 @@
         }
     }
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("menuSearchInput");
+            const suggestionsBox = document.getElementById("searchSuggestionsBox");
+            let debounceTimer = null;
+
+            if (!searchInput || !suggestionsBox) return;
+
+            searchInput.addEventListener("input", function () {
+                clearTimeout(debounceTimer);
+                const term = this.value.trim();
+
+                if (term.length < 1) {
+                    suggestionsBox.style.display = "none";
+                    suggestionsBox.innerHTML = "";
+                    return;
+                }
+
+                debounceTimer = setTimeout(function () {
+                    fetch(`/Product/SearchSuggestions?term=${encodeURIComponent(term)}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            if (!data || data.length === 0) {
+                                suggestionsBox.innerHTML = `
+                                    <div class="px-3 py-2 text-muted small text-center">
+                                        <i class="bi bi-info-circle me-1"></i>Không có món khớp với "<strong>${term}</strong>"
+                                    </div>`;
+                                suggestionsBox.style.display = "block";
+                                return;
+                            }
+
+                            let html = `<div class="px-2 py-1 text-muted small fw-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.5px;">Gợi ý món trà sữa</div>`;
+                            data.forEach(item => {
+                                html += `
+                                    <a href="/Product/Details/${item.id}" class="dropdown-item rounded-3 p-2 d-flex align-items-center gap-2 mb-1">
+                                        <img src="${item.imageUrl}" class="rounded-3" style="width: 38px; height: 38px; object-fit: cover;" onerror="this.src='https://placehold.co/100x100/FBD7DC/4A202A?text=TN';" />
+                                        <div class="flex-grow-1 text-truncate">
+                                            <div class="fw-bold small text-truncate" style="color: var(--nn-plum-text);">${item.name}</div>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="text-danger fw-bold small">${item.price}</span>
+                                                ${item.badge ? `<span class="badge rounded-pill bg-light text-danger border small py-0 px-1.5" style="font-size: 0.65rem;">${item.badge}</span>` : ''}
+                                            </div>
+                                        </div>
+                                    </a>
+                                `;
+                            });
+
+                            html += `
+                                <div class="border-top pt-1 text-center">
+                                    <button type="submit" form="menuSearchForm" class="btn btn-link text-decoration-none small text-danger py-1" style="font-size: 0.78rem;">
+                                        Xem tất cả kết quả cho "${term}" <i class="bi bi-arrow-right"></i>
+                                    </button>
+                                </div>
+                            `;
+
+                            suggestionsBox.innerHTML = html;
+                            suggestionsBox.style.display = "block";
+                        })
+                        .catch(() => {
+                            suggestionsBox.style.display = "none";
+                        });
+                }, 220);
+            });
+
+            // Đóng gợi ý khi click ra ngoài
+            document.addEventListener("click", function (e) {
+                if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+                    suggestionsBox.style.display = "none";
+                }
+            });
+
+            // Hiện lại gợi ý khi click vào input nếu có nội dung
+            searchInput.addEventListener("focus", function () {
+                if (this.value.trim().length >= 1 && suggestionsBox.innerHTML.trim() !== "") {
+                    suggestionsBox.style.display = "block";
+                }
+            });
+        });
+    </script>
+}

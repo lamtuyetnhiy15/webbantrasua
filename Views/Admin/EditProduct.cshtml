@@ -4,29 +4,31 @@
     ViewData["Title"] = "Chỉnh Sửa Món #" + Model.ProductId + " - TN Tea";
 }
 
-<div class="container my-5 py-3">
+<div class="container my-5">
+    <!-- Header Quản lý -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-3 border-bottom">
+        <div>
+            <span class="badge rounded-pill px-3 py-1 mb-2" style="background-color: #FDE8EA; color: #D25C70; font-weight: 700; font-size: 0.75rem; letter-spacing: 1.5px;">
+                MENU QUẢN TRỊ
+            </span>
+            <h2 class="font-serif fw-bold mb-0" style="color: #4A202A; font-family: 'Playfair Display', Georgia, serif;">
+                Chỉnh Sửa Món Trà Sữa
+            </h2>
+            <p class="text-secondary small mb-0">Cập nhật thông tin chi tiết của món trà sữa</p>
+        </div>
+        <partial name="_AdminNav" />
+    </div>
+
     <div class="row justify-content-center">
         <div class="col-lg-8 col-xl-7">
-            <!-- Header tiêu đề -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <span class="badge rounded-pill px-3 py-1 mb-2" style="background-color: #FDE8EA; color: #D25C70; font-weight: 700; font-size: 0.75rem; letter-spacing: 1.5px;">
-                        MENU QUẢN TRỊ
-                    </span>
-                    <h2 class="font-serif fw-bold mb-0" style="color: #4A202A; font-family: 'Playfair Display', Georgia, serif;">
-                        Chỉnh Sửa Món Trà Sữa
-                    </h2>
-                </div>
-                <a asp-action="Products" class="btn btn-outline-secondary rounded-pill px-3 py-2 fw-semibold">
-                    <i class="bi bi-arrow-left me-1"></i> Quay lại
-                </a>
-            </div>
 
             <!-- Card Form chỉnh sửa -->
             <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5" style="background: #FFFFFF; border: 1px solid rgba(244, 166, 178, 0.35) !important;">
                 <form asp-action="EditProduct" asp-route-id="@Model.ProductId" method="post" enctype="multipart/form-data">
                     @Html.AntiForgeryToken()
                     <input type="hidden" asp-for="ProductId" />
+                    <!-- Lưu đường dẫn ảnh hiện tại để không bị mất nếu không tải ảnh mới -->
+                    <input type="hidden" asp-for="ImageUrl" id="imageUrlHidden" />
 
                     <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 px-3 small rounded-3 border-0 mb-3" style="background-color: #FDE8EA; color: #B71C1C;"></div>
 
@@ -37,19 +39,39 @@
                         <span asp-validation-for="Name" class="text-danger small"></span>
                     </div>
 
-                    <!-- Hàng: Danh mục & Đơn giá -->
+                    <!-- Hàng: Mục lục (Danh mục món) & Đơn giá -->
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
-                            <label asp-for="Category" class="form-label fw-semibold small text-secondary">
-                                <i class="bi bi-tag-fill text-danger me-1"></i>Danh mục món <span class="text-danger">*</span>
-                            </label>
-                            <select asp-for="Category" class="form-select" style="border-color: #F8D7DC;">
-                                <option value="Trà Sữa Đậm Hương">Trà Sữa Đậm Hương</option>
-                                <option value="Trà Sữa Truyền Thống">Trà Sữa Truyền Thống</option>
-                                <option value="Cheese & Matcha">Cheese & Matcha</option>
-                                <option value="Trà Trái Cây Tươi Mát">Trà Trái Cây Tươi Mát</option>
-                                <option value="Topping & Món Khác">Topping & Món Khác</option>
-                            </select>
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label asp-for="Category" class="form-label fw-semibold small text-secondary mb-0">
+                                    <i class="bi bi-tag-fill text-danger me-1"></i>Mục lục món <span class="text-danger">*</span>
+                                </label>
+                                <button type="button" class="btn btn-sm btn-link p-0 text-decoration-none fw-semibold" style="color: #EE8698; font-size: 0.8rem;" data-bs-toggle="modal" data-bs-target="#categoryModal">
+                                    <i class="bi bi-gear-fill me-1"></i>Quản lý mục lục
+                                </button>
+                            </div>
+                            <div class="input-group">
+                                <select asp-for="Category" id="categorySelect" class="form-select" style="border-color: #F8D7DC;">
+                                    @if (ViewBag.Categories != null)
+                                    {
+                                        foreach (var c in (IEnumerable<WebTraSua.Models.Category>)ViewBag.Categories)
+                                        {
+                                            <option value="@c.Name" selected="@(c.Name == Model.Category)">@c.Name</option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <option value="Trà Sữa Đậm Hương" selected="@("Trà Sữa Đậm Hương" == Model.Category)">Trà Sữa Đậm Hương</option>
+                                        <option value="Trà Sữa Truyền Thống" selected="@("Trà Sữa Truyền Thống" == Model.Category)">Trà Sữa Truyền Thống</option>
+                                        <option value="Cheese & Matcha" selected="@("Cheese & Matcha" == Model.Category)">Cheese & Matcha</option>
+                                        <option value="Trà Trái Cây Tươi Mát" selected="@("Trà Trái Cây Tươi Mát" == Model.Category)">Trà Trái Cây Tươi Mát</option>
+                                        <option value="Topping & Món Khác" selected="@("Topping & Món Khác" == Model.Category)">Topping & Món Khác</option>
+                                    }
+                                </select>
+                                <button class="btn btn-outline-danger" type="button" data-bs-toggle="modal" data-bs-target="#categoryModal" title="Tạo thêm / sửa mục lục">
+                                    <i class="bi bi-plus-lg"></i>
+                                </button>
+                            </div>
                             <span asp-validation-for="Category" class="text-danger small"></span>
                         </div>
 
@@ -65,28 +87,55 @@
                         </div>
                     </div>
 
-                    <!-- Hình ảnh sản phẩm -->
+                    <!-- Nhãn hiển thị trên ảnh (Mục trong ảnh) -->
                     <div class="mb-3">
-                        <label class="form-label fw-semibold small text-secondary">Hình ảnh món</label>
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label asp-for="Badge" class="form-label fw-semibold small text-secondary mb-0">
+                                <i class="bi bi-stars text-danger me-1"></i>Nhãn hiển thị trên ảnh (Mục trong ảnh)
+                            </label>
+                            <button type="button" class="btn btn-sm text-danger p-0 text-decoration-none small" id="clearBadgeBtn" title="Bỏ nhãn">
+                                <i class="bi bi-trash3 me-1"></i>Xóa nhãn trên ảnh
+                            </button>
+                        </div>
+                        <div class="input-group mb-2">
+                            <span class="input-group-text bg-white" style="border-color: #F8D7DC;"><i class="bi bi-sparkles text-danger"></i></span>
+                            <input asp-for="Badge" id="badgeInput" class="form-control" placeholder="Ví dụ: Tn Signature, Best Seller, Món Mới... (để trống nếu không muốn hiện)" style="border-color: #F8D7DC;" />
+                        </div>
+                        <div class="d-flex flex-wrap gap-2 align-items-center">
+                            <small class="text-muted">Gợi ý nhanh:</small>
+                            <button type="button" class="btn btn-sm btn-outline-danger rounded-pill py-0 px-2.5 badge-chip" data-badge="Tn Signature">✨ Tn Signature</button>
+                            <button type="button" class="btn btn-sm btn-outline-danger rounded-pill py-0 px-2.5 badge-chip" data-badge="Best Seller">⭐ Best Seller</button>
+                            <button type="button" class="btn btn-sm btn-outline-danger rounded-pill py-0 px-2.5 badge-chip" data-badge="Món Mới">🌿 Món Mới</button>
+                            <button type="button" class="btn btn-sm btn-outline-danger rounded-pill py-0 px-2.5 badge-chip" data-badge="Hot">🔥 Hot</button>
+                            <button type="button" class="btn btn-sm btn-outline-danger rounded-pill py-0 px-2.5 badge-chip" data-badge="Đặc Biệt">💖 Đặc Biệt</button>
+                        </div>
+                        <span asp-validation-for="Badge" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Hình ảnh sản phẩm: Chỉ tải từ máy tính, KHÔNG nhập URL -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small text-secondary">
+                            <i class="bi bi-image text-danger me-1"></i>Hình ảnh món trà sữa
+                        </label>
                         
-                        <!-- Tải file ảnh mới nếu muốn thay đổi -->
+                        <!-- Tải file ảnh mới từ máy tính -->
                         <div class="mb-2">
-                            <label class="form-label small text-muted">Chọn ảnh mới từ máy tính (nếu muốn đổi ảnh):</label>
+                            <label class="form-label small text-muted">Chọn ảnh mới từ máy tính (nếu muốn thay đổi ảnh):</label>
                             <input type="file" name="imageUpload" id="imageFileInput" class="form-control" accept="image/*" style="border-color: #F8D7DC;" />
                         </div>
 
-                        <!-- Hoặc nhập link ảnh trực tiếp -->
-                        <div class="mb-2">
-                            <label class="form-label small text-muted">Hoặc chỉnh sửa link ảnh Online (URL):</label>
-                            <input asp-for="ImageUrl" id="imageUrlInput" class="form-control" style="border-color: #F8D7DC;" />
-                        </div>
-
-                        <!-- Khung xem trước ảnh -->
-                        <div class="mt-3 p-3 text-center rounded-3" style="background-color: #FFF8F9; border: 1px dashed #F4A6B2;">
-                            <small class="text-muted d-block mb-2">Hình ảnh hiện tại:</small>
-                            <img id="imagePreview" src="@Model.ImageUrl" 
-                                 alt="@Model.Name" class="img-fluid rounded-3 shadow-sm" style="max-height: 180px; object-fit: cover;" 
-                                 onerror="this.src='https://placehold.co/400x300/FBD7DC/4A202A?text=TN+Tea';" />
+                        <!-- Khung xem trước ảnh CÓ NHÃN (Live preview badge on image) -->
+                        <div class="mt-3 p-3 text-center rounded-3 position-relative" style="background-color: #FFF8F9; border: 1px dashed #F4A6B2;">
+                            <small class="text-muted d-block mb-2">Hình ảnh hiện tại & nhãn trên ảnh:</small>
+                            <div class="d-inline-block position-relative shadow-sm rounded-3 overflow-hidden" style="max-height: 220px; max-width: 100%;">
+                                <!-- Nhãn trên ảnh động -->
+                                <span id="badgePreview" class="sakura-tag position-absolute" style="top: 10px; left: 10px; z-index: 5;">
+                                    <i class="bi bi-stars me-1"></i><span id="badgeText">@(string.IsNullOrWhiteSpace(Model.Badge) ? "Tn Signature" : Model.Badge)</span>
+                                </span>
+                                <img id="imagePreview" src="@Model.ImageUrl" 
+                                     alt="@Model.Name" class="img-fluid" style="max-height: 220px; width: 100%; min-width: 250px; object-fit: cover;" 
+                                     onerror="this.src='https://placehold.co/400x300/FBD7DC/4A202A?text=TN+Tea';" />
+                            </div>
                         </div>
                     </div>
 
@@ -116,25 +165,250 @@
     </div>
 </div>
 
+<!-- Modal Quản Lý Mục Lục -->
+<partial name="_CategoryModal" />
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
-        // Xử lý xem trước ảnh khi chọn file
-        document.getElementById('imageFileInput').addEventListener('change', function(e) {
-            if (e.target.files && e.target.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    document.getElementById('imagePreview').src = evt.target.result;
-                };
-                reader.readAsDataURL(e.target.files[0]);
+        // --- Xử lý Nhãn hiển thị trên ảnh (Badge / Mục trong ảnh) ---
+        const badgeInput = document.getElementById('badgeInput');
+        const badgePreview = document.getElementById('badgePreview');
+        const badgeText = document.getElementById('badgeText');
+        const clearBadgeBtn = document.getElementById('clearBadgeBtn');
+
+        function updateBadgePreview() {
+            if (!badgeInput || !badgePreview || !badgeText) return;
+            const val = badgeInput.value.trim();
+            if (val) {
+                badgeText.textContent = val;
+                badgePreview.style.display = 'inline-block';
+            } else {
+                badgePreview.style.display = 'none';
             }
+        }
+
+        if (badgeInput) {
+            badgeInput.addEventListener('input', updateBadgePreview);
+        }
+
+        if (clearBadgeBtn) {
+            clearBadgeBtn.addEventListener('click', function() {
+                if (badgeInput) {
+                    badgeInput.value = '';
+                    updateBadgePreview();
+                }
+            });
+        }
+
+        document.querySelectorAll('.badge-chip').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (badgeInput) {
+                    badgeInput.value = this.getAttribute('data-badge');
+                    updateBadgePreview();
+                }
+            });
         });
 
-        // Xử lý xem trước ảnh khi thay đổi URL
-        document.getElementById('imageUrlInput').addEventListener('input', function(e) {
-            if (e.target.value.trim() !== '') {
-                document.getElementById('imagePreview').src = e.target.value.trim();
+        // Khởi tạo preview nhãn
+        updateBadgePreview();
+
+        // --- Xử lý xem trước ảnh khi chọn file từ máy ---
+        const imageFileInput = document.getElementById('imageFileInput');
+        if (imageFileInput) {
+            imageFileInput.addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(evt) {
+                        document.getElementById('imagePreview').src = evt.target.result;
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+        }
+
+        // --- Xử lý Quản lý Mục Lục (Categories AJAX) ---
+        const categorySelect = document.getElementById('categorySelect');
+        const newCategoryInput = document.getElementById('newCategoryInput');
+        const btnAddCategory = document.getElementById('btnAddCategory');
+        const addCategoryMsg = document.getElementById('addCategoryMsg');
+        const categoryListContainer = document.getElementById('categoryListContainer');
+
+        function loadCategories() {
+            fetch('/Admin/GetCategories')
+                .then(res => res.json())
+                .then(data => {
+                    renderCategoryList(data);
+                    updateCategorySelect(data);
+                })
+                .catch(err => console.error('Lỗi tải mục lục:', err));
+        }
+
+        function updateCategorySelect(categories) {
+            if (!categorySelect) return;
+            const currentVal = categorySelect.value;
+            categorySelect.innerHTML = '';
+            categories.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.name;
+                opt.textContent = c.name;
+                if (c.name === currentVal) {
+                    opt.selected = true;
+                }
+                categorySelect.appendChild(opt);
+            });
+        }
+
+        function renderCategoryList(categories) {
+            if (!categoryListContainer) return;
+            categoryListContainer.innerHTML = '';
+            if (!categories || categories.length === 0) {
+                categoryListContainer.innerHTML = '<div class="text-center py-2 text-muted small">Chưa có mục lục nào</div>';
+                return;
             }
-        });
+            categories.forEach(c => {
+                const item = document.createElement('div');
+                item.className = 'list-group-item d-flex justify-content-between align-items-center py-2 px-3 border-light';
+                item.id = `cat-item-${c.id}`;
+                item.innerHTML = `
+                    <span class="cat-name-display fw-semibold text-dark small">${escapeHtml(c.name)}</span>
+                    <div class="cat-actions d-flex gap-1">
+                        <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2 rounded-pill small btn-edit-cat" data-id="${c.id}">
+                            <i class="bi bi-pencil"></i> Sửa
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 rounded-pill small btn-delete-cat" data-id="${c.id}" data-name="${escapeHtml(c.name)}">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                    <div class="cat-edit-form d-none w-100">
+                        <div class="input-group input-group-sm">
+                            <input type="text" class="form-control form-control-sm edit-cat-input" value="${escapeHtml(c.name)}" />
+                            <button type="button" class="btn btn-success btn-sm btn-save-cat" data-id="${c.id}"><i class="bi bi-check-lg"></i> Lưu</button>
+                            <button type="button" class="btn btn-secondary btn-sm btn-cancel-cat" data-id="${c.id}"><i class="bi bi-x-lg"></i> Hủy</button>
+                        </div>
+                    </div>
+                `;
+                categoryListContainer.appendChild(item);
+            });
+
+            attachCatEventListeners();
+        }
+
+        function attachCatEventListeners() {
+            document.querySelectorAll('.btn-edit-cat').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const row = document.getElementById(`cat-item-${id}`);
+                    row.querySelector('.cat-name-display').classList.add('d-none');
+                    row.querySelector('.cat-actions').classList.add('d-none');
+                    row.querySelector('.cat-edit-form').classList.remove('d-none');
+                });
+            });
+
+            document.querySelectorAll('.btn-cancel-cat').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const row = document.getElementById(`cat-item-${id}`);
+                    row.querySelector('.cat-name-display').classList.remove('d-none');
+                    row.querySelector('.cat-actions').classList.remove('d-none');
+                    row.querySelector('.cat-edit-form').classList.add('d-none');
+                });
+            });
+
+            document.querySelectorAll('.btn-save-cat').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    const row = document.getElementById(`cat-item-${id}`);
+                    const newName = row.querySelector('.edit-cat-input').value.trim();
+                    if (!newName) {
+                        alert('Tên mục lục không được để trống!');
+                        return;
+                    }
+
+                    fetch('/Admin/EditCategory', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: id, newName: newName })
+                    })
+                    .then(res => res.json())
+                    .then(res => {
+                        if (res.success) {
+                            loadCategories();
+                        } else {
+                            alert(res.message || 'Lỗi khi sửa mục lục');
+                        }
+                    });
+                });
+            });
+
+            document.querySelectorAll('.btn-delete-cat').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    const name = this.getAttribute('data-name');
+                    if (confirm(`Bạn có chắc muốn xóa mục lục "${name}"?`)) {
+                        fetch('/Admin/DeleteCategory', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ id: id })
+                        })
+                        .then(res => res.json())
+                        .then(res => {
+                            if (res.success) {
+                                loadCategories();
+                            } else {
+                                alert(res.message || 'Lỗi khi xóa mục lục');
+                            }
+                        });
+                    }
+                });
+            });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        if (btnAddCategory) {
+            btnAddCategory.addEventListener('click', function() {
+                const name = newCategoryInput.value.trim();
+                if (!name) {
+                    addCategoryMsg.innerHTML = '<span class="text-danger">Vui lòng nhập tên mục lục mới!</span>';
+                    return;
+                }
+
+                fetch('/Admin/AddCategory', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: name })
+                })
+                .then(res => res.json())
+                .then(res => {
+                    if (res.success) {
+                        addCategoryMsg.innerHTML = '<span class="text-success">Đã tạo mục lục mới thành công!</span>';
+                        newCategoryInput.value = '';
+                        loadCategories();
+                        setTimeout(() => {
+                            if (categorySelect) categorySelect.value = res.category.name;
+                        }, 250);
+                    } else {
+                        addCategoryMsg.innerHTML = `<span class="text-danger">${res.message || 'Lỗi khi tạo mục lục!'}</span>`;
+                    }
+                })
+                .catch(() => {
+                    addCategoryMsg.innerHTML = '<span class="text-danger">Lỗi kết nối máy chủ!</span>';
+                });
+            });
+        }
+
+        const categoryModal = document.getElementById('categoryModal');
+        if (categoryModal) {
+            categoryModal.addEventListener('show.bs.modal', function() {
+                if (addCategoryMsg) addCategoryMsg.innerHTML = '';
+                if (newCategoryInput) newCategoryInput.value = '';
+                loadCategories();
+            });
+        }
     </script>
 }

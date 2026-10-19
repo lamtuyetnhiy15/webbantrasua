@@ -1,0 +1,38 @@
+<!-- Modal Quản Lý Mục Lục (Categories) -->
+<div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header border-bottom pb-3" style="background-color: #FFF5F7;">
+                <h5 class="modal-title font-serif fw-bold" id="categoryModalLabel" style="color: #4A202A;">
+                    <i class="bi bi-journal-bookmark-fill text-danger me-2"></i>Quản Lý Mục Lục Món
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <!-- Form thêm mục lục mới -->
+                <div class="mb-4 p-3 rounded-3" style="background: #FFF8F9; border: 1px solid #F8D7DC;">
+                    <label class="form-label fw-semibold small text-secondary">Tạo thêm tên mục lục mới:</label>
+                    <div class="input-group">
+                        <input type="text" id="newCategoryInput" class="form-control" placeholder="Nhập tên mục lục (ví dụ: Trà Trái Cây Tươi...)" style="border-color: #F8D7DC;" />
+                        <button type="button" class="btn text-white fw-semibold" id="btnAddCategory" style="background: #EE8698;">
+                            <i class="bi bi-plus-circle me-1"></i>Thêm Mới
+                        </button>
+                    </div>
+                    <div id="addCategoryMsg" class="small mt-1"></div>
+                </div>
+
+                <!-- Danh sách mục lục hiện có -->
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <label class="form-label fw-semibold small text-secondary mb-0">Danh sách mục lục hiện có:</label>
+                    <small class="text-muted" style="font-size: 0.75rem;">(Bấm nút Sửa để đổi tên)</small>
+                </div>
+                <div id="categoryListContainer" class="list-group rounded-3" style="max-height: 260px; overflow-y: auto;">
+                    <div class="text-center py-3 text-muted small">Đang tải danh sách mục lục...</div>
+                </div>
+            </div>
+            <div class="modal-footer border-top pt-3">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>

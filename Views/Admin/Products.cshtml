@@ -16,24 +16,15 @@
             </h2>
             <p class="text-secondary small mb-0">Quản lý toàn bộ danh sách menu trà sữa đang mở bán tại TN Tea</p>
         </div>
-        <div class="d-flex flex-wrap gap-2">
-            <!-- Nút Thêm Món Mới -->
-            <a asp-action="CreateProduct" class="btn text-white rounded-pill px-3 py-2 fw-semibold shadow-sm" 
-               style="background: linear-gradient(135deg, #EE8698 0%, #E87A90 100%);">
-                <i class="bi bi-plus-circle me-1"></i> Thêm Món Mới
-            </a>
-            <!-- Quản lý Món: Đang ở trang này -> Tô đậm nền hồng -->
-            <a asp-action="Products" class="btn text-white rounded-pill px-3 py-2 fw-semibold shadow-sm" style="background: #EE8698;">
-                <i class="bi bi-cup-hot me-1"></i> Quản lý Món
-            </a>
-            <!-- Quản lý Đơn hàng: Để dạng viền -->
-            <a asp-action="Orders" class="btn btn-outline-danger rounded-pill px-3 py-2 fw-semibold">
-                <i class="bi bi-receipt me-1"></i> Quản lý Đơn hàng
-            </a>
-            <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-3 py-2 fw-semibold">
-                <i class="bi bi-speedometer2 me-1"></i> Dashboard
-            </a>
-        </div>
+        <partial name="_AdminNav" />
+    </div>
+
+    <!-- Thanh thao tác bổ trợ -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <span class="text-secondary small">Tổng số món: <strong>@(Model?.Count() ?? 0)</strong> sản phẩm</span>
+        <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1.5 fw-semibold" data-bs-toggle="modal" data-bs-target="#categoryModal">
+            <i class="bi bi-journal-bookmark-fill me-1"></i> Quản Lý Mục Lục Món
+        </button>
     </div>
 
     <!-- Bảng danh sách sản phẩm -->
@@ -42,9 +33,9 @@
             <table class="table table-hover align-middle mb-0">
                 <thead style="background-color: #FFF8F9; color: #4A202A; font-size: 0.85rem;">
                     <tr>
-                        <th class="ps-4" style="width: 80px;">HÌNH ẢNH</th>
+                        <th class="ps-4" style="width: 90px;">HÌNH ẢNH</th>
                         <th>TÊN MÓN TRÀ SỮA</th>
-                        <th>DANH MỤC</th>
+                        <th>MỤC LỤC</th>
                         <th>ĐƠN GIÁ</th>
                         <th>MÔ TẢ CHI TIẾT</th>
                         <th class="text-end pe-4" style="width: 220px;">THAO TÁC</th>
@@ -57,8 +48,14 @@
                         {
                             <tr>
                                 <td class="ps-4">
-                                    <img src="@p.ImageUrl" alt="@p.Name" style="width: 55px; height: 55px; object-fit: cover; border-radius: 12px; border: 1px solid #FDE8EA;" 
-                                         onerror="this.src='https://placehold.co/100x100/FBD7DC/4A202A?text=TN+Tea';" />
+                                    <div class="position-relative d-inline-block">
+                                        <img src="@p.ImageUrl" alt="@p.Name" style="width: 55px; height: 55px; object-fit: cover; border-radius: 12px; border: 1px solid #FDE8EA;" 
+                                             onerror="this.src='https://placehold.co/100x100/FBD7DC/4A202A?text=TN+Tea';" />
+                                        @if (!string.IsNullOrWhiteSpace(p.Badge))
+                                        {
+                                            <span class="position-absolute badge rounded-pill" style="top: -6px; left: -6px; background-color: #EE8698; font-size: 0.6rem; letter-spacing: 0.5px;">@p.Badge</span>
+                                        }
+                                    </div>
                                 </td>
                                 <td>
                                     <div class="fw-bold" style="color: #4A202A;">@p.Name</div>
@@ -115,3 +112,173 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Quản Lý Mục Lục -->
+<partial name="_CategoryModal" />
+
+@section Scripts {
+    <script>
+        const newCategoryInput = document.getElementById('newCategoryInput');
+        const btnAddCategory = document.getElementById('btnAddCategory');
+        const addCategoryMsg = document.getElementById('addCategoryMsg');
+        const categoryListContainer = document.getElementById('categoryListContainer');
+
+        function loadCategories() {
+            fetch('/Admin/GetCategories')
+                .then(res => res.json())
+                .then(data => renderCategoryList(data))
+                .catch(err => console.error('Lỗi tải mục lục:', err));
+        }
+
+        function renderCategoryList(categories) {
+            if (!categoryListContainer) return;
+            categoryListContainer.innerHTML = '';
+            if (!categories || categories.length === 0) {
+                categoryListContainer.innerHTML = '<div class="text-center py-2 text-muted small">Chưa có mục lục nào</div>';
+                return;
+            }
+            categories.forEach(c => {
+                const item = document.createElement('div');
+                item.className = 'list-group-item d-flex justify-content-between align-items-center py-2 px-3 border-light';
+                item.id = `cat-item-${c.id}`;
+                item.innerHTML = `
+                    <span class="cat-name-display fw-semibold text-dark small">${escapeHtml(c.name)}</span>
+                    <div class="cat-actions d-flex gap-1">
+                        <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2 rounded-pill small btn-edit-cat" data-id="${c.id}">
+                            <i class="bi bi-pencil"></i> Sửa
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 rounded-pill small btn-delete-cat" data-id="${c.id}" data-name="${escapeHtml(c.name)}">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                    <div class="cat-edit-form d-none w-100">
+                        <div class="input-group input-group-sm">
+                            <input type="text" class="form-control form-control-sm edit-cat-input" value="${escapeHtml(c.name)}" />
+                            <button type="button" class="btn btn-success btn-sm btn-save-cat" data-id="${c.id}"><i class="bi bi-check-lg"></i> Lưu</button>
+                            <button type="button" class="btn btn-secondary btn-sm btn-cancel-cat" data-id="${c.id}"><i class="bi bi-x-lg"></i> Hủy</button>
+                        </div>
+                    </div>
+                `;
+                categoryListContainer.appendChild(item);
+            });
+
+            attachCatEventListeners();
+        }
+
+        function attachCatEventListeners() {
+            document.querySelectorAll('.btn-edit-cat').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const row = document.getElementById(`cat-item-${id}`);
+                    row.querySelector('.cat-name-display').classList.add('d-none');
+                    row.querySelector('.cat-actions').classList.add('d-none');
+                    row.querySelector('.cat-edit-form').classList.remove('d-none');
+                });
+            });
+
+            document.querySelectorAll('.btn-cancel-cat').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const row = document.getElementById(`cat-item-${id}`);
+                    row.querySelector('.cat-name-display').classList.remove('d-none');
+                    row.querySelector('.cat-actions').classList.remove('d-none');
+                    row.querySelector('.cat-edit-form').classList.add('d-none');
+                });
+            });
+
+            document.querySelectorAll('.btn-save-cat').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    const row = document.getElementById(`cat-item-${id}`);
+                    const newName = row.querySelector('.edit-cat-input').value.trim();
+                    if (!newName) {
+                        alert('Tên mục lục không được để trống!');
+                        return;
+                    }
+
+                    fetch('/Admin/EditCategory', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: id, newName: newName })
+                    })
+                    .then(res => res.json())
+                    .then(res => {
+                        if (res.success) {
+                            loadCategories();
+                            // Tải lại trang sau khi sửa tên danh mục để cập nhật bảng
+                            window.location.reload();
+                        } else {
+                            alert(res.message || 'Lỗi khi sửa mục lục');
+                        }
+                    });
+                });
+            });
+
+            document.querySelectorAll('.btn-delete-cat').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    const name = this.getAttribute('data-name');
+                    if (confirm(`Bạn có chắc muốn xóa mục lục "${name}"?`)) {
+                        fetch('/Admin/DeleteCategory', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ id: id })
+                        })
+                        .then(res => res.json())
+                        .then(res => {
+                            if (res.success) {
+                                loadCategories();
+                            } else {
+                                alert(res.message || 'Lỗi khi xóa mục lục');
+                            }
+                        });
+                    }
+                });
+            });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        if (btnAddCategory) {
+            btnAddCategory.addEventListener('click', function() {
+                const name = newCategoryInput.value.trim();
+                if (!name) {
+                    addCategoryMsg.innerHTML = '<span class="text-danger">Vui lòng nhập tên mục lục mới!</span>';
+                    return;
+                }
+
+                fetch('/Admin/AddCategory', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: name })
+                })
+                .then(res => res.json())
+                .then(res => {
+                    if (res.success) {
+                        addCategoryMsg.innerHTML = '<span class="text-success">Đã tạo mục lục mới thành công!</span>';
+                        newCategoryInput.value = '';
+                        loadCategories();
+                    } else {
+                        addCategoryMsg.innerHTML = `<span class="text-danger">${res.message || 'Lỗi khi tạo mục lục!'}</span>`;
+                    }
+                })
+                .catch(() => {
+                    addCategoryMsg.innerHTML = '<span class="text-danger">Lỗi kết nối máy chủ!</span>';
+                });
+            });
+        }
+
+        const categoryModal = document.getElementById('categoryModal');
+        if (categoryModal) {
+            categoryModal.addEventListener('show.bs.modal', function() {
+                if (addCategoryMsg) addCategoryMsg.innerHTML = '';
+                if (newCategoryInput) newCategoryInput.value = '';
+                loadCategories();
+            });
+        }
+    </script>
+}

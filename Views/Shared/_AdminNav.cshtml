@@ -1,0 +1,37 @@
+@{
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+    var isCreateProduct = currentAction.Equals("CreateProduct", StringComparison.OrdinalIgnoreCase);
+    var isProducts = currentAction.Equals("Products", StringComparison.OrdinalIgnoreCase) || currentAction.Equals("EditProduct", StringComparison.OrdinalIgnoreCase);
+    var isOrders = currentAction.Equals("Orders", StringComparison.OrdinalIgnoreCase);
+    var isDashboard = currentAction.Equals("Index", StringComparison.OrdinalIgnoreCase);
+}
+
+<div class="d-flex flex-wrap gap-2">
+    <!-- Nút Thêm Món Mới -->
+    <a asp-controller="Admin" asp-action="CreateProduct"
+       class="btn rounded-pill px-3 py-2 fw-semibold @(isCreateProduct ? "text-white shadow-sm" : "btn-outline-danger")"
+       style="@(isCreateProduct ? "background: #EE8698; border-color: #EE8698;" : "")">
+        <i class="bi bi-plus-circle me-1"></i> Thêm Món Mới
+    </a>
+
+    <!-- Nút Quản lý Món -->
+    <a asp-controller="Admin" asp-action="Products"
+       class="btn rounded-pill px-3 py-2 fw-semibold @(isProducts ? "text-white shadow-sm" : "btn-outline-danger")"
+       style="@(isProducts ? "background: #EE8698; border-color: #EE8698;" : "")">
+        <i class="bi bi-cup-hot me-1"></i> Quản lý Món
+    </a>
+
+    <!-- Nút Quản lý Đơn hàng -->
+    <a asp-controller="Admin" asp-action="Orders"
+       class="btn rounded-pill px-3 py-2 fw-semibold @(isOrders ? "text-white shadow-sm" : "btn-outline-danger")"
+       style="@(isOrders ? "background: #EE8698; border-color: #EE8698;" : "")">
+        <i class="bi bi-receipt me-1"></i> Quản lý Đơn hàng
+    </a>
+
+    <!-- Nút Dashboard: chung màu với nút quản lý đơn hàng -->
+    <a asp-controller="Admin" asp-action="Index"
+       class="btn rounded-pill px-3 py-2 fw-semibold @(isDashboard ? "text-white shadow-sm" : "btn-outline-danger")"
+       style="@(isDashboard ? "background: #EE8698; border-color: #EE8698;" : "")">
+        <i class="bi bi-speedometer2 me-1"></i> Dashboard
+    </a>
+</div>

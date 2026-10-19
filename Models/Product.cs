@@ -25,5 +25,9 @@ public class Product
     [Display(Name = "Danh mục")]
     public string Category { get; set; } = "Trà Sữa Đậm Hương";
 
+    [StringLength(100)]
+    [Display(Name = "Nhãn trên ảnh")]
+    public string? Badge { get; set; } = "Tn Signature";
+
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 }

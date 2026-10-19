@@ -37,14 +37,32 @@
                         <span asp-validation-for="Name" class="text-danger small"></span>
                     </div>
 
-                    <!-- Đơn giá -->
-                    <div class="mb-3">
-                        <label asp-for="Price" class="form-label fw-semibold small text-secondary">Đơn giá (VNĐ) <span class="text-danger">*</span></label>
-                        <div class="input-group">
-                            <input asp-for="Price" type="number" step="1000" min="0" class="form-control" style="border-color: #F8D7DC;" />
-                            <span class="input-group-text bg-white" style="border-color: #F8D7DC;">đ</span>
+                    <!-- Hàng: Danh mục & Đơn giá -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="Category" class="form-label fw-semibold small text-secondary">
+                                <i class="bi bi-tag-fill text-danger me-1"></i>Danh mục món <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="Category" class="form-select" style="border-color: #F8D7DC;">
+                                <option value="Trà Sữa Đậm Hương">Trà Sữa Đậm Hương</option>
+                                <option value="Trà Sữa Truyền Thống">Trà Sữa Truyền Thống</option>
+                                <option value="Cheese & Matcha">Cheese & Matcha</option>
+                                <option value="Trà Trái Cây Tươi Mát">Trà Trái Cây Tươi Mát</option>
+                                <option value="Topping & Món Khác">Topping & Món Khác</option>
+                            </select>
+                            <span asp-validation-for="Category" class="text-danger small"></span>
                         </div>
-                        <span asp-validation-for="Price" class="text-danger small"></span>
+
+                        <div class="col-md-6">
+                            <label asp-for="Price" class="form-label fw-semibold small text-secondary">
+                                <i class="bi bi-cash-stack text-danger me-1"></i>Đơn giá (VNĐ) <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <input asp-for="Price" type="number" step="1000" min="0" class="form-control" style="border-color: #F8D7DC;" />
+                                <span class="input-group-text bg-white" style="border-color: #F8D7DC;">đ</span>
+                            </div>
+                            <span asp-validation-for="Price" class="text-danger small"></span>
+                        </div>
                     </div>
 
                     <!-- Hình ảnh sản phẩm -->

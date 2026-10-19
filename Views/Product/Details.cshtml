@@ -29,9 +29,14 @@
 
             <!-- Cột thông tin chi tiết -->
             <div class="col-md-7">
-                <span class="badge rounded-pill px-3 py-2 text-uppercase mb-2" style="background-color: var(--nn-soft-pink); color: var(--nn-deep-rose); font-weight: 700; font-size: 0.75rem;">
-                    Trà Sữa Cao Cấp TN Tea
-                </span>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="badge rounded-pill px-3 py-2 text-uppercase" style="background-color: var(--nn-soft-pink); color: var(--nn-deep-rose); font-weight: 700; font-size: 0.75rem;">
+                        <i class="bi bi-tag-fill me-1"></i>@(string.IsNullOrWhiteSpace(Model.Category) ? "Trà Sữa Cao Cấp" : Model.Category)
+                    </span>
+                    <span class="badge rounded-pill px-3 py-2 text-uppercase" style="background-color: #FFF0F2; color: #7A3545; font-weight: 600; font-size: 0.75rem; border: 1px solid rgba(244,166,178,0.4);">
+                        TN Signature
+                    </span>
+                </div>
 
                 <h1 class="font-serif fw-bold mb-3 display-6" style="color: var(--nn-plum-text);">@Model.Name</h1>
 

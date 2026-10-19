@@ -5,16 +5,18 @@
     var selectedCat = (string?)ViewBag.SelectedCategory ?? "all";
     var searchTerm = (string?)ViewBag.SearchTerm ?? "";
 
-    // Danh sách các danh mục sản phẩm (dễ dàng bổ sung thêm danh mục sau này)
+    // Danh sách các danh mục sản phẩm
     var categories = new List<(string Key, string Name, string Icon)>
     {
         ("all", "Tất Cả Sản Phẩm", "bi bi-grid-fill"),
         ("trasua", "Trà Sữa Đậm Hương", "bi bi-cup-hot-fill"),
         ("truyenthong", "Trà Sữa Truyền Thống", "bi bi-cup-straw"),
-        ("cheese", "Cheese & Matcha", "bi bi-stars")
+        ("cheese", "Cheese & Matcha", "bi bi-stars"),
+        ("tratraicay", "Trà Trái Cây", "bi bi-flower1"),
+        ("topping", "Topping & Món Khác", "bi bi-plus-circle")
     };
 
-    var currentCatKey = (selectedCat == "tratraicay" ? "truyenthong" : selectedCat);
+    var currentCatKey = selectedCat;
     var currentCat = categories.FirstOrDefault(c => c.Key == currentCatKey);
     var currentCatName = currentCat.Name != null ? currentCat.Name : "Tất Cả Sản Phẩm";
 }
@@ -109,9 +111,9 @@
             {
                 <div class="col">
                     <div class="card h-100 sakura-card">
-                        <!-- Nhãn Tag Signature -->
+                        <!-- Nhãn Tag Danh mục -->
                         <span class="sakura-tag">
-                            <i class="bi bi-stars me-1"></i>Tn Signature
+                            <i class="bi bi-tag-fill me-1"></i>@(string.IsNullOrWhiteSpace(item.Category) ? "TN Signature" : item.Category)
                         </span>
 
                         <!-- Hình ảnh món -->

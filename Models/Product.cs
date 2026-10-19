@@ -20,5 +20,10 @@ public class Product
     [StringLength(250)]
     public string ImageUrl { get; set; } = string.Empty;
 
+    [Required(ErrorMessage = "Vui lòng chọn danh mục cho sản phẩm")]
+    [StringLength(100)]
+    [Display(Name = "Danh mục")]
+    public string Category { get; set; } = "Trà Sữa Đậm Hương";
+
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 }

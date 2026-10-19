@@ -84,6 +84,34 @@ using (var scope = app.Services.CreateScope())
         );
     ");
 
+    // Đảm bảo cột Category tồn tại trong bảng Products
+    try
+    {
+        db.Database.ExecuteSqlRaw("ALTER TABLE Products ADD COLUMN Category TEXT NOT NULL DEFAULT 'Trà Sữa Đậm Hương';");
+    }
+    catch
+    {
+        // Cột đã tồn tại
+    }
+
+    // Tự động phân loại danh mục ban đầu cho các món sẵn có
+    try
+    {
+        db.Database.ExecuteSqlRaw(@"
+            UPDATE Products SET Category = 'Trà Sữa Truyền Thống' 
+            WHERE (Category IS NULL OR Category = '' OR Category = 'Trà Sữa Đậm Hương') AND (Name LIKE '%Truyền Thống%' OR Name LIKE '%Đường Đen%' OR Name LIKE '%Assam%');
+
+            UPDATE Products SET Category = 'Cheese & Matcha' 
+            WHERE (Category IS NULL OR Category = '' OR Category = 'Trà Sữa Đậm Hương') AND (Name LIKE '%Cheese%' OR Name LIKE '%Matcha%' OR Name LIKE '%Kem%');
+
+            UPDATE Products SET Category = 'Trà Trái Cây Tươi Mát' 
+            WHERE (Category IS NULL OR Category = '' OR Category = 'Trà Sữa Đậm Hương') AND (Name LIKE '%Trái Cây%' OR Name LIKE '%Đào%' OR Name LIKE '%Dâu%' OR Name LIKE '%Vải%');
+        ");
+    }
+    catch
+    {
+    }
+
     if (!db.BrandStoryMilestones.Any())
     {
         db.BrandStoryMilestones.AddRange(

@@ -44,6 +44,7 @@
                     <tr>
                         <th class="ps-4" style="width: 80px;">HÌNH ẢNH</th>
                         <th>TÊN MÓN TRÀ SỮA</th>
+                        <th>DANH MỤC</th>
                         <th>ĐƠN GIÁ</th>
                         <th>MÔ TẢ CHI TIẾT</th>
                         <th class="text-end pe-4" style="width: 220px;">THAO TÁC</th>
@@ -63,8 +64,13 @@
                                     <div class="fw-bold" style="color: #4A202A;">@p.Name</div>
                                     <small class="text-muted">Mã món: #@p.ProductId</small>
                                 </td>
+                                <td>
+                                    <span class="badge rounded-pill px-2.5 py-1.5" style="background-color: #FDE8EA; color: #D25C70; font-weight: 600; font-size: 0.78rem;">
+                                        <i class="bi bi-tag-fill me-1"></i>@(string.IsNullOrWhiteSpace(p.Category) ? "Trà Sữa Đậm Hương" : p.Category)
+                                    </span>
+                                </td>
                                 <td class="fw-bold text-danger">@p.Price.ToString("N0") đ</td>
-                                <td class="small text-secondary" style="max-width: 320px;">
+                                <td class="small text-secondary" style="max-width: 280px;">
                                     <div style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
                                         @p.Description
                                     </div>
@@ -99,7 +105,7 @@
                     else
                     {
                         <tr>
-                            <td colspan="5" class="text-center py-5 text-muted">
+                            <td colspan="6" class="text-center py-5 text-muted">
                                 Chưa có sản phẩm nào. Hãy bấm "Thêm Món Mới" để bắt đầu!
                             </td>
                         </tr>

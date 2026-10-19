@@ -87,6 +87,15 @@ namespace WebTraSua.Controllers
                     product.ImageUrl = "https://images.unsplash.com/photo-1558857563-b37df35d1f86?w=600&auto=format&fit=crop&q=80";
                 }
 
+                if (string.IsNullOrWhiteSpace(product.Category))
+                {
+                    product.Category = "Trà Sữa Đậm Hương";
+                }
+                else
+                {
+                    product.Category = product.Category.Trim();
+                }
+
                 _context.Products.Add(product);
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = $"Đã thêm thành công món \"{product.Name}\" vào Menu TN Tea!";
@@ -140,6 +149,7 @@ namespace WebTraSua.Controllers
 
                     existing.Name = product.Name.Trim();
                     existing.Price = product.Price;
+                    existing.Category = string.IsNullOrWhiteSpace(product.Category) ? "Trà Sữa Đậm Hương" : product.Category.Trim();
                     existing.Description = product.Description;
 
                     // Nếu có tải ảnh mới lên

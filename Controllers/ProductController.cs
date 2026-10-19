@@ -34,17 +34,29 @@ public class ProductController : Controller
 
         if (!string.IsNullOrWhiteSpace(category) && category != "all")
         {
-            if (category == "trasua")
+            if (category == "trasua" || category == "damhuong")
             {
-                query = query.Where(p => p.Name.Contains("Trà Sữa"));
+                query = query.Where(p => p.Category == "Trà Sữa Đậm Hương" || (string.IsNullOrEmpty(p.Category) && p.Name.Contains("Trà Sữa")));
             }
-            else if (category == "truyenthong" || category == "tratraicay")
+            else if (category == "truyenthong")
             {
-                query = query.Where(p => p.Name.Contains("Truyền Thống") || p.Name.Contains("Đường Đen") || p.Name.Contains("Assam") || p.Name.Contains("Trà Đào"));
+                query = query.Where(p => p.Category == "Trà Sữa Truyền Thống" || (string.IsNullOrEmpty(p.Category) && (p.Name.Contains("Truyền Thống") || p.Name.Contains("Đường Đen") || p.Name.Contains("Assam"))));
             }
             else if (category == "cheese")
             {
-                query = query.Where(p => p.Name.Contains("Cheese") || p.Name.Contains("Matcha") || p.Name.Contains("Kem"));
+                query = query.Where(p => p.Category == "Cheese & Matcha" || (string.IsNullOrEmpty(p.Category) && (p.Name.Contains("Cheese") || p.Name.Contains("Matcha") || p.Name.Contains("Kem"))));
+            }
+            else if (category == "tratraicay")
+            {
+                query = query.Where(p => p.Category == "Trà Trái Cây Tươi Mát" || (string.IsNullOrEmpty(p.Category) && (p.Name.Contains("Trái Cây") || p.Name.Contains("Đào") || p.Name.Contains("Dâu") || p.Name.Contains("Vải"))));
+            }
+            else if (category == "topping")
+            {
+                query = query.Where(p => p.Category == "Topping & Món Khác");
+            }
+            else
+            {
+                query = query.Where(p => p.Category == category);
             }
         }
 

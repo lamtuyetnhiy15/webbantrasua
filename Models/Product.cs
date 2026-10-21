@@ -27,7 +27,7 @@ public class Product
 
     [StringLength(100)]
     [Display(Name = "Nhãn trên ảnh")]
-    public string? Badge { get; set; } = "Tn Signature";
+    public string? Badge { get; set; }
 
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 }

@@ -77,40 +77,37 @@ public class AppDbContext : DbContext
             }
         );
 
-        modelBuilder.Entity<Product>().HasData(
-            new Product
-            {
-                ProductId = 1,
-                Name = "Trà Sữa Trân Châu Đường Đen Hoàng Gia",
-                Price = 35000,
-                Description = "Hương vị trà đen Assam thượng hạng hòa quyện cùng sữa tươi thanh trùng và từng hạt trân châu hoàng kim dai giòn ngào đường đen mật mía thơm nồng.",
-                ImageUrl = "https://images.unsplash.com/photo-1558857563-b37df35d1f86?w=600&auto=format&fit=crop&q=80"
-            },
-            new Product
-            {
-                ProductId = 2,
-                Name = "Trà Sữa Matcha Đậu Đỏ Nhật Bản",
-                Price = 40000,
-                Description = "Bột Matcha Uji nguyên chất nhập khẩu từ Kyoto kết hợp vị sữa béo ngậy thanh nhẹ, phủ lớp đậu đỏ hầm mềm ngọt bùi tự nhiên.",
-                ImageUrl = "https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=600&auto=format&fit=crop&q=80"
-            },
-            new Product
-            {
-                ProductId = 3,
-                Name = "Trà Sữa Truyền Thống Đậm Vị TN Tea",
-                Price = 38000,
-                Description = "Vị trà đen mộc truyền thống hòa quyện cùng sữa tươi thanh trùng Đà Lạt và trân châu hoàng kim chuẩn vị thơm béo đậm đà.",
-                ImageUrl = "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=600&auto=format&fit=crop&q=80"
-            },
-            new Product
-            {
-                ProductId = 4,
-                Name = "Trà Sữa Oolong Nướng Cheese Kem Trứng",
-                Price = 45000,
-                Description = "Cốt trà Oolong Đài Loan được sao nướng kỹ lưỡng mang hương khói đặc trưng, kết hợp lớp Macchiato phô mai kem trứng béo ngậy sánh mịn thơm lừng.",
-                ImageUrl = "https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=600&auto=format&fit=crop&q=80"
-            }
+        // Khởi tạo Seed Data cho Category
+        modelBuilder.Entity<Category>().HasData(
+            new Category { Id = 1, Name = "Trà Sữa Đậm Hương", Icon = "bi bi-tag-fill" },
+            new Category { Id = 2, Name = "Trà Sữa Truyền Thống", Icon = "bi bi-tag-fill" },
+            new Category { Id = 3, Name = "Cheese & Matcha", Icon = "bi bi-tag-fill" },
+            new Category { Id = 5, Name = "Topping & Món Khác", Icon = "bi bi-tag-fill" }
         );
+
+        modelBuilder.Entity<Product>().HasData(
+            new Product { ProductId = 1, Name = "Trà Sữa Trân Châu Đường Đen Hoàng Gia", Price = 35000, Description = "Hương vị trà đen Assam thượng hạng hòa quyện cùng sữa tươi thanh trùng và từng hạt trân châu hoàng kim dai giòn ngào đường đen mật mía thơm nồng.", ImageUrl = "/images/c6a46c86a4ae4af08365751fc68d7ee5.jpg", Category = "Trà Sữa Truyền Thống", Badge = "Best Seller" },
+            new Product { ProductId = 2, Name = "Trà Sữa Matcha Đậu Đỏ Nhật Bản", Price = 40000, Description = "Bột Matcha Uji nguyên chất nhập khẩu từ Kyoto kết hợp vị sữa béo ngậy thanh nhẹ, phủ lớp đậu đỏ hầm mềm ngọt bùi tự nhiên.", ImageUrl = "/images/8b756644c5224d96a10b738189805585.jpg", Category = "Cheese & Matcha", Badge = "Best Seller" },
+            new Product { ProductId = 3, Name = "Trà Sữa Truyền Thống Đậm Vị TN Tea", Price = 38000, Description = "Vị trà đen mộc truyền thống hòa quyện cùng sữa tươi thanh trùng Đà Lạt và trân châu hoàng kim chuẩn vị thơm béo đậm đà.", ImageUrl = "/images/07c03f54f0d341b9984c8506f1cec9d5.jpg", Category = "Trà Sữa Truyền Thống", Badge = "Best Seller" },
+            new Product { ProductId = 4, Name = "Trà Sữa Oolong Nướng Cheese Kem Trứng", Price = 45000, Description = "Cốt trà Oolong Đài Loan được sao nướng kỹ lưỡng mang hương khói đặc trưng, kết hợp lớp Macchiato phô mai kem trứng béo ngậy sánh mịn thơm lừng.", ImageUrl = "/images/731686ef7ec44c498e83b105d95aa9f2.jpg", Category = "Cheese & Matcha", Badge = "Best Seller" },
+            new Product { ProductId = 5, Name = "Trà Sữa Lài Đậm Vị", Price = 30000, Description = "Vị trà lài thanh thoát, thơm nồng dịu nhẹ kết hợp sữa béo ngậy.", ImageUrl = "/images/2a7a8556e3694c24b53fe618052c59ff.jpg", Category = "Trà Sữa Đậm Hương", Badge = null },
+            new Product { ProductId = 6, Name = "Trà Sữa Oolong Đậm Đà", Price = 32000, Description = "Cốt trà oolong ủ kỹ, thơm mùi rang nướng, vị đậm đà rõ nét.", ImageUrl = "/images/86e9d6cac4e245078ab7bc96c28f3b98.jpg", Category = "Trà Sữa Đậm Hương", Badge = "Best Seller" },
+            new Product { ProductId = 7, Name = "Trà Sữa Trà Đen Hương Cam", Price = 32000, Description = "Trà đen cao cấp thoang thoảng hương vỏ cam tươi, đậm trà thanh mát.", ImageUrl = "/images/160eefd63008482fb0288b022d45132a.jpg", Category = "Trà Sữa Đậm Hương", Badge = null },
+            new Product { ProductId = 8, Name = "Trà Sữa Gạo Rang", Price = 35000, Description = "Hương thơm bùi bùi từ gạo rang mộc mạc, êm dịu và ít ngấy.", ImageUrl = "/images/4198a7d809cb4d41a8dbd6a80bf059e3.jpg", Category = "Trà Sữa Đậm Hương", Badge = null },
+            new Product { ProductId = 9, Name = "Trà Sữa Hồng Trà", Price = 25000, Description = "Vị truyền thống quen thuộc, cốt hồng trà đậm vị hòa cùng sữa béo.", ImageUrl = "/images/723d1cbdbf334405831c358aee71bf17.jpg", Category = "Trà Sữa Truyền Thống", Badge = null },
+            new Product { ProductId = 10, Name = "Trà Sữa Thái Xanh", Price = 27000, Description = "Hương thảo mộc mát dịu đặc trưng, màu xanh bắt mắt.", ImageUrl = "/images/4e4374ec4153404e9f892ea066ebd02a.jpg", Category = "Trà Sữa Truyền Thống", Badge = null },
+            new Product { ProductId = 11, Name = "Trà Sữa Thái Đỏ", Price = 28000, Description = "Vị trà đậm, ngọt béo thơm lừng chuẩn phong cách Thái.", ImageUrl = "/images/16b74a3c626644bda48f5803deb06c60.jpg", Category = "Trà Sữa Đậm Hương", Badge = null },
+            new Product { ProductId = 12, Name = "Trà Sữa Khoai Môn", Price = 32000, Description = "Vị khoai môn bùi béo tự nhiên, màu tím ngọt ngào.", ImageUrl = "/images/4e599078326441a19e24e63224f5f84d.jpg", Category = "Trà Sữa Truyền Thống", Badge = null },
+            new Product { ProductId = 13, Name = "Matcha Latte", Price = 35000, Description = "Matcha nguyên chất thơm dịu hòa cùng sữa tươi thanh trùng.", ImageUrl = "/images/00cb1a3ba8db43a3b7046a25a13f2ccb.jpg", Category = "Cheese & Matcha", Badge = null },
+            new Product { ProductId = 14, Name = "Matcha Kem Cheese", Price = 42000, Description = "Vị trà xanh chát nhẹ kết hợp lớp kem phô mai béo mặn sánh mịn.", ImageUrl = "/images/7af088bb3e1e4b4bbf79c432ac494312.jpg", Category = "Cheese & Matcha", Badge = "Best Seller" },
+            new Product { ProductId = 15, Name = "Hồng Trà Kem Cheese", Price = 38000, Description = "Hồng trà thanh mát phủ lớp kem phô mai thơm ngậy bên trên.", ImageUrl = "/images/6082e5c608dc4690bc4de88ff2373130.jpg", Category = "Cheese & Matcha", Badge = null },
+            new Product { ProductId = 16, Name = "Oolong Kem Cheese", Price = 40000, Description = "Vị trà oolong thanh tao cân bằng hoàn hảo với lớp cheese mềm mịn.", ImageUrl = "/images/adf9c166a01449e290e54251771c2d78.jpg", Category = "Cheese & Matcha", Badge = null },
+            new Product { ProductId = 17, Name = "Trân Châu Đen Dẻo", Price = 6000, Description = "Hạt trân châu truyền thống nấu dẻo dai, phủ mật mía ngọt thơm.", ImageUrl = "/images/fb3917a4415e4bf4a8f77ed18f32708b.jpg", Category = "Topping & Món Khác", Badge = null },
+            new Product { ProductId = 18, Name = "Trân Châu Trắng 3Q", Price = 8000, Description = "Hạt ngọc trai giòn sần sật, vị ngọt thanh tự nhiên.", ImageUrl = "/images/20620d6e052d4dbea19e717de32d3053.jpg", Category = "Topping & Món Khác", Badge = null },
+            new Product { ProductId = 19, Name = "Pudding Trứng", Price = 15000, Description = "Bánh flan trứng mềm mịn, tan ngay trong miệng, béo ngậy thơm lừng.", ImageUrl = "/images/947920f494214475a34abc30ed92eabf.jpg", Category = "Topping & Món Khác", Badge = null },
+            new Product { ProductId = 20, Name = "Thạch Củ Năng", Price = 8000, Description = "Vỏ ngoài dai dẻo bọc bên trong nhân củ năng tươi giòn rụm.", ImageUrl = "/images/c2839de97b724ad7bde03d8076bb473a.jpg", Category = "Topping & Món Khác", Badge = null }
+        );
+
 
         // Cấu hình Fluent API cho BrandStoryMilestone
         modelBuilder.Entity<BrandStoryMilestone>(entity =>

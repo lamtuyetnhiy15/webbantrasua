@@ -11,4 +11,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.10" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="tntea.db" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>

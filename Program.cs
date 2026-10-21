@@ -112,6 +112,27 @@ using (var scope = app.Services.CreateScope())
     {
     }
 
+    // Tự động đồng bộ ảnh và nhãn Best Seller cho 4 món đặc trưng nếu còn dùng link Unsplash cũ
+    try
+    {
+        var unsplashProducts = db.Products.Where(p => p.ImageUrl.Contains("unsplash.com")).ToList();
+        if (unsplashProducts.Any())
+        {
+            foreach (var p in unsplashProducts)
+            {
+                if (p.ProductId == 1) { p.ImageUrl = "/images/c6a46c86a4ae4af08365751fc68d7ee5.jpg"; p.Badge = "Best Seller"; }
+                else if (p.ProductId == 2) { p.ImageUrl = "/images/8b756644c5224d96a10b738189805585.jpg"; p.Badge = "Best Seller"; }
+                else if (p.ProductId == 3) { p.ImageUrl = "/images/07c03f54f0d341b9984c8506f1cec9d5.jpg"; p.Badge = "Best Seller"; }
+                else if (p.ProductId == 4) { p.ImageUrl = "/images/731686ef7ec44c498e83b105d95aa9f2.jpg"; p.Badge = "Best Seller"; }
+            }
+            db.SaveChanges();
+        }
+    }
+    catch
+    {
+    }
+
+
     if (!db.BrandStoryMilestones.Any())
     {
         db.BrandStoryMilestones.AddRange(

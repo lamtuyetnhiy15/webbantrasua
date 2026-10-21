@@ -12,6 +12,7 @@ RUN dotnet publish "WebTraSua.csproj" -c Release -o /app/publish /p:UseAppHost=f
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
+COPY --from=build /src/tntea.db ./tntea.db
 
 # Expose port 8080 (standard for .NET 8 on Linux containers)
 EXPOSE 8080

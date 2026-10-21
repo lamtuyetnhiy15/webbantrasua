@@ -94,26 +94,26 @@ public class ProductController : Controller
             return exact;
         }
 
-        // Ưu tiên 2: Hỗ trợ alias khóa ngắn gọn
-        if (category == "trasua" || category == "damhuong")
+        // Ưu tiên 2: Hỗ trợ alias & tên mở rộng từ menu footer
+        if (category == "trasua" || category == "damhuong" || category.Contains("Đậm Hương", StringComparison.OrdinalIgnoreCase))
         {
-            return source.Where(p => p.Category == "Trà Sữa Đậm Hương" || (string.IsNullOrEmpty(p.Category) && p.Name.Contains("Trà Sữa", StringComparison.OrdinalIgnoreCase)));
+            return source.Where(p => (p.Category != null && p.Category.Contains("Đậm Hương", StringComparison.OrdinalIgnoreCase)) || (string.IsNullOrEmpty(p.Category) && p.Name.Contains("Trà Sữa", StringComparison.OrdinalIgnoreCase)));
         }
-        if (category == "truyenthong")
+        if (category == "truyenthong" || category.Contains("Truyền Thống", StringComparison.OrdinalIgnoreCase))
         {
-            return source.Where(p => p.Category == "Trà Sữa Truyền Thống" || (string.IsNullOrEmpty(p.Category) && (p.Name.Contains("Truyền Thống", StringComparison.OrdinalIgnoreCase) || p.Name.Contains("Đường Đen", StringComparison.OrdinalIgnoreCase) || p.Name.Contains("Assam", StringComparison.OrdinalIgnoreCase))));
+            return source.Where(p => (p.Category != null && p.Category.Contains("Truyền Thống", StringComparison.OrdinalIgnoreCase)) || (string.IsNullOrEmpty(p.Category) && (p.Name.Contains("Truyền Thống", StringComparison.OrdinalIgnoreCase) || p.Name.Contains("Đường Đen", StringComparison.OrdinalIgnoreCase) || p.Name.Contains("Assam", StringComparison.OrdinalIgnoreCase))));
         }
-        if (category == "cheese")
+        if (category == "cheese" || category.Contains("cheese", StringComparison.OrdinalIgnoreCase) || category.Contains("kem trứng", StringComparison.OrdinalIgnoreCase) || category.Contains("matcha", StringComparison.OrdinalIgnoreCase))
         {
-            return source.Where(p => p.Category == "Cheese & Matcha" || (string.IsNullOrEmpty(p.Category) && (p.Name.Contains("Cheese", StringComparison.OrdinalIgnoreCase) || p.Name.Contains("Matcha", StringComparison.OrdinalIgnoreCase) || p.Name.Contains("Kem", StringComparison.OrdinalIgnoreCase))));
+            return source.Where(p => (p.Category != null && (p.Category.Contains("Cheese", StringComparison.OrdinalIgnoreCase) || p.Category.Contains("Matcha", StringComparison.OrdinalIgnoreCase))) || (string.IsNullOrEmpty(p.Category) && (p.Name.Contains("Cheese", StringComparison.OrdinalIgnoreCase) || p.Name.Contains("Matcha", StringComparison.OrdinalIgnoreCase) || p.Name.Contains("Kem", StringComparison.OrdinalIgnoreCase))));
         }
-        if (category == "tratraicay")
+        if (category == "tratraicay" || category.Contains("trái cây", StringComparison.OrdinalIgnoreCase))
         {
-            return source.Where(p => p.Category == "Trà Trái Cây Tươi Mát" || p.Category == "Trà Trái Cây" || (string.IsNullOrEmpty(p.Category) && (p.Name.Contains("Trái Cây", StringComparison.OrdinalIgnoreCase) || p.Name.Contains("Đào", StringComparison.OrdinalIgnoreCase) || p.Name.Contains("Dâu", StringComparison.OrdinalIgnoreCase) || p.Name.Contains("Vải", StringComparison.OrdinalIgnoreCase))));
+            return source.Where(p => (p.Category != null && p.Category.Contains("Trái Cây", StringComparison.OrdinalIgnoreCase)) || (string.IsNullOrEmpty(p.Category) && (p.Name.Contains("Trái Cây", StringComparison.OrdinalIgnoreCase) || p.Name.Contains("Đào", StringComparison.OrdinalIgnoreCase) || p.Name.Contains("Dâu", StringComparison.OrdinalIgnoreCase) || p.Name.Contains("Vải", StringComparison.OrdinalIgnoreCase))));
         }
-        if (category == "topping")
+        if (category == "topping" || category.Contains("topping", StringComparison.OrdinalIgnoreCase) || category.Contains("trân châu", StringComparison.OrdinalIgnoreCase))
         {
-            return source.Where(p => p.Category == "Topping & Món Khác");
+            return source.Where(p => (p.Category != null && p.Category.Contains("Topping", StringComparison.OrdinalIgnoreCase)) || p.Name.Contains("Trân Châu", StringComparison.OrdinalIgnoreCase) || p.Name.Contains("Pudding", StringComparison.OrdinalIgnoreCase));
         }
         return source.Where(p => string.Equals(p.Category, category, StringComparison.OrdinalIgnoreCase));
     }

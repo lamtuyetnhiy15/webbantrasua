@@ -2,10 +2,71 @@
 
 @{
     ViewData["Title"] = "Trang Chủ";
+    // Chỉ lấy các món có nhãn Best Seller
+    var bestSellerProducts = Model?.Where(p => !string.IsNullOrEmpty(p.Badge) && 
+        (p.Badge.Contains("Best Seller", StringComparison.OrdinalIgnoreCase) || 
+         p.Badge.Contains("Best Sellers", StringComparison.OrdinalIgnoreCase))).ToList() 
+        ?? new List<WebTraSua.Models.Product>();
+
+    // Fallback nếu chưa có món nào gắn nhãn Best Seller
+    if (!bestSellerProducts.Any())
+    {
+        bestSellerProducts = Model?.Take(6).ToList() ?? new List<WebTraSua.Models.Product>();
+    }
 }
 
+<style>
+    /* Ẩn hoàn toàn tất cả các thanh cuộn ngang - không gây thanh trượt trên web */
+    .bestseller-carousel-outer {
+        overflow: hidden;
+        width: 100%;
+        max-width: 100%;
+        position: relative;
+    }
+    .bestseller-track {
+        display: flex;
+        gap: 1.5rem;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* Firefox: Ẩn thanh cuộn */
+        -ms-overflow-style: none; /* IE, Edge: Ẩn thanh cuộn */
+        cursor: grab;
+        padding: 6px 2px 14px 2px;
+    }
+    .bestseller-track::-webkit-scrollbar {
+        display: none !important; /* Chrome, Safari, Edge: Ẩn thanh cuộn */
+        width: 0 !important;
+        height: 0 !important;
+    }
+    .bestseller-track.grabbing {
+        cursor: grabbing !important;
+        user-select: none !important;
+    }
+    /* Cố định đúng 4 cột đều nhau trong 1 hàng ở màn hình Desktop */
+    .bestseller-card-col {
+        flex: 0 0 calc((100% - 3 * 1.5rem) / 4);
+        max-width: calc((100% - 3 * 1.5rem) / 4);
+        box-sizing: border-box;
+        scroll-snap-align: start;
+    }
+    @@media (max-width: 991.98px) {
+        .bestseller-card-col {
+            flex: 0 0 calc((100% - 1.5rem) / 2) !important;
+            max-width: calc((100% - 1.5rem) / 2) !important;
+        }
+    }
+    @@media (max-width: 575.98px) {
+        .bestseller-card-col {
+            flex: 0 0 85% !important;
+            max-width: 85% !important;
+        }
+    }
+</style>
+
 <!-- ==========================================================================
-     HERO BANNER CHÍNH THỨC - TN TEA BANNER GIF
+     HERO BANNER CHÍNH THỨC - TN TEA BANNER GIF (GIỮ NGUYÊN)
      ========================================================================== -->
 <div class="hero-first-screen">
     <div class="container-fluid px-2 px-md-3" style="max-width: 1200px;">
@@ -16,7 +77,7 @@
 </div>
 
 <!-- ==========================================================================
-     KHU VỰC MENU TRÀ SỮA (MENU SẢN PHẨM)
+     KHU VỰC MENU TRÀ SỮA (MENU SẢN PHẨM) - TIÊU ĐỀ GIỮ NGUYÊN
      ========================================================================== -->
 <div class="container my-5" id="menu">
     <div class="section-header">
@@ -28,77 +89,450 @@
         <p class="text-secondary">Trải nghiệm hương vị trà sữa đậm hương thanh mát chuẩn phong cách hoàng gia</p>
     </div>
 
-    <!-- Tiêu đề danh mục món -->
-    <div class="mb-4 pb-2 border-bottom">
-        <h5 class="fw-bold mb-0" style="color: var(--nn-plum-text);">
-            <i class="bi bi-cup-straw text-danger me-2"></i>Món Ngon Tuyển Chọn
-        </h5>
-        <small class="text-muted">Chọn ly trà sữa yêu thích của bạn ngay hôm nay</small>
+    <!-- Tiêu đề danh mục món kèm nút điều hướng trượt ngang -->
+    <div class="d-flex justify-content-between align-items-end mb-4 pb-2 border-bottom">
+        <div>
+            <h5 class="fw-bold mb-1" style="color: var(--nn-plum-text);">
+                <i class="bi bi-stars text-danger me-2"></i>Món Ngon Tuyển Chọn (Best Sellers)
+            </h5>
+            <small class="text-muted">Các món mang nhãn Best Seller được khách hàng yêu thích nhất tại TN Tea</small>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            @if (bestSellerProducts.Count > 4)
+            {
+                <div class="d-flex gap-1 me-2">
+                    <button type="button" class="btn btn-sm btn-outline-danger rounded-circle p-0 d-flex align-items-center justify-content-center" id="btnPrevBestSeller" style="width: 34px; height: 34px;" title="Xem món trước">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-danger rounded-circle p-0 d-flex align-items-center justify-content-center" id="btnNextBestSeller" style="width: 34px; height: 34px;" title="Kéo qua trái xem tiếp">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+                </div>
+            }
+            <a asp-controller="Product" asp-action="Menu" class="text-decoration-none fw-semibold small d-none d-md-inline-block" style="color: var(--nn-deep-rose);">
+                Xem toàn bộ menu <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
     </div>
 
-    <!-- Danh sách sản phẩm dạng lưới (Grid 4 cột) -->
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-        @if (Model != null && Model.Any())
-        {
-            @foreach (var item in Model)
+    <!-- Khung hiển thị cố định đúng 4 sản phẩm - hoàn toàn không có thanh cuộn ngang trang web -->
+    <div class="bestseller-carousel-outer">
+        <div class="bestseller-track" id="bestsellerTrack">
+            @if (bestSellerProducts.Any())
             {
-                <div class="col">
-                    <div class="card h-100 sakura-card">
-                        @if (!string.IsNullOrWhiteSpace(item.Badge))
-                        {
-                            <!-- Nhãn Tag trên ảnh -->
-                            <span class="sakura-tag">
-                                <i class="bi bi-stars me-1"></i>@item.Badge
-                            </span>
-                        }
+                @foreach (var item in bestSellerProducts)
+                {
+                    <div class="bestseller-card-col">
+                        <div class="card h-100 sakura-card">
+                            @if (!string.IsNullOrWhiteSpace(item.Badge))
+                            {
+                                <!-- Nhãn Tag trên ảnh -->
+                                <span class="sakura-tag">
+                                    <i class="bi bi-stars me-1"></i>@item.Badge
+                                </span>
+                            }
 
-                        <!-- Hình ảnh sản phẩm -->
-                        <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId" class="text-decoration-none overflow-hidden">
-                            <img src="@item.ImageUrl" class="card-img-top sakura-card-img" alt="@item.Name" 
-                                 onerror="this.onerror=null; this.src='https://placehold.co/600x400/FBD7DC/4A202A?text=Tn+Tea';" />
-                        </a>
+                            <!-- Hình ảnh sản phẩm -->
+                            <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId" class="text-decoration-none overflow-hidden">
+                                <img src="@item.ImageUrl" class="card-img-top sakura-card-img" alt="@item.Name" 
+                                     onerror="this.onerror=null; this.src='https://placehold.co/600x400/FBD7DC/4A202A?text=Tn+Tea';" />
+                            </a>
 
-                        <div class="card-body d-flex flex-column justify-content-between p-3">
-                            <div>
-                                <h5 class="card-title fw-bold mb-2">
-                                    <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId" 
-                                       class="text-decoration-none text-reset" title="@item.Name">
-                                        @item.Name
-                                    </a>
-                                </h5>
-                                <p class="card-text text-secondary small" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 40px; line-height: 1.5;">
-                                    @item.Description
-                                </p>
-                            </div>
-
-                            <div class="mt-3 pt-2 border-top">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <span class="sakura-price">@item.Price.ToString("N0") đ</span>
-                                    <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId" class="small text-decoration-none fw-semibold" style="color: var(--nn-deep-rose);">
-                                        Chi tiết <i class="bi bi-arrow-right"></i>
-                                    </a>
+                            <div class="card-body d-flex flex-column justify-content-between p-3">
+                                <div>
+                                    <h5 class="card-title fw-bold mb-2">
+                                        <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId" 
+                                           class="text-decoration-none text-reset" title="@item.Name">
+                                            @item.Name
+                                        </a>
+                                    </h5>
+                                    <p class="card-text text-secondary small" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 40px; line-height: 1.5;">
+                                        @item.Description
+                                    </p>
                                 </div>
 
-                                <div class="d-grid gap-2">
-                                    <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@item.ProductId" 
-                                       asp-route-returnUrl="@Context.Request.Path@Context.Request.QueryString" 
-                                       class="btn btn-sakura-primary text-center btn-add-cart-ajax" 
-                                       data-id="@item.ProductId" data-name="@item.Name">
-                                        <i class="bi bi-cart-plus me-1"></i> Cho vào giỏ hàng
-                                    </a>
+                                <div class="mt-3 pt-2 border-top">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="sakura-price">@item.Price.ToString("N0") đ</span>
+                                        <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId" class="small text-decoration-none fw-semibold" style="color: var(--nn-deep-rose);">
+                                            Chi tiết <i class="bi bi-arrow-right"></i>
+                                        </a>
+                                    </div>
+
+                                    <div class="d-grid gap-2">
+                                        <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@item.ProductId" 
+                                           asp-route-returnUrl="@Context.Request.Path@Context.Request.QueryString" 
+                                           class="btn btn-sakura-primary text-center btn-add-cart-ajax" 
+                                           data-id="@item.ProductId" data-name="@item.Name">
+                                            <i class="bi bi-cart-plus me-1"></i> Cho vào giỏ hàng
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                }
+            }
+            else
+            {
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted fs-5">Hiện chưa có món nào gắn nhãn Best Seller.</p>
                 </div>
             }
-        }
-        else
-        {
-            <div class="col-12 text-center py-5">
-                <p class="text-muted fs-5">Hiện chưa có sản phẩm nào trong menu.</p>
-            </div>
-        }
+        </div>
+    </div>
+
+    @if (bestSellerProducts.Count > 4)
+    {
+        <div class="text-center mt-2 px-1 text-muted small">
+            <span><i class="bi bi-hand-index-thumb me-1 text-danger"></i> Kéo / vuốt sang trái để khám phá thêm món</span>
+        </div>
+    }
+
+    <!-- Nút xem toàn bộ sản phẩm -->
+    <div class="text-center mt-5 pt-3">
+        <a asp-controller="Product" asp-action="Menu" class="btn btn-sakura-primary rounded-pill px-5 py-3 fw-bold shadow-sm" style="font-size: 1rem; letter-spacing: 0.5px;">
+            <i class="bi bi-grid-3x3-gap-fill me-2"></i> Xem Toàn Bộ Sản Phẩm <i class="bi bi-arrow-right ms-2"></i>
+        </a>
     </div>
 </div>
 
+<!-- ==========================================================================
+     SECTION 2: BỘ SƯU TẬP 3 DÒNG HƯƠNG VỊ ĐẶC TRƯNG
+     ========================================================================== -->
+<div class="py-5" style="background: linear-gradient(180deg, #FFFFFF 0%, #FFF5F7 100%);">
+    <div class="container my-4">
+        <div class="text-center mb-5">
+            <span class="badge rounded-pill px-3 py-1 text-uppercase mb-2" style="background-color: var(--nn-soft-pink); color: var(--nn-deep-rose); font-weight: 700; font-size: 0.75rem; letter-spacing: 1.5px;">
+                Bộ Sưu Tập Signature
+            </span>
+            <h2 class="display-6 font-serif fw-bold" style="color: var(--nn-plum-text);">Khám Phá Hương Vị TN Tea</h2>
+            <div class="sakura-divider"></div>
+            <p class="text-secondary mx-auto mb-0" style="max-width: 650px;">
+                Mỗi dòng thức uống mang một cá tính hương vị riêng biệt, từ vị trà mộc truyền thống đến lớp phô mai béo ngậy sánh mịn.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Dòng 1: Trà Sữa Đậm Hương -->
+            <div class="col-md-4">
+                <div class="card h-100 border-0 rounded-4 shadow-sm p-4 text-center story-value-card" style="background: #FFFFFF; border: 1px solid var(--nn-card-border) !important;">
+                    <div class="contact-icon-box mx-auto mb-3" style="width: 64px; height: 64px;">
+                        <i class="bi bi-cup-straw fs-2" style="color: var(--nn-deep-rose);"></i>
+                    </div>
+                    <h4 class="font-serif fw-bold mb-2" style="color: var(--nn-plum-text);">Trà Sữa Đậm Hương</h4>
+                    <p class="text-secondary small mb-3" style="line-height: 1.7;">
+                        Cốt trà Oolong sao nướng thủ công & Trà đen Assam thượng hạng hòa quyện cùng sữa tươi thanh trùng Đà Lạt thơm béo ngậy.
+                    </p>
+                    <div class="mt-auto">
+                        <a asp-controller="Product" asp-action="Menu" asp-route-category="Trà Sữa Đậm Hương" class="btn btn-sm btn-outline-danger rounded-pill px-4 py-1.5 fw-semibold">
+                            Xem 6 món <i class="bi bi-chevron-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dòng 2: Cheese & Macchiato -->
+            <div class="col-md-4">
+                <div class="card h-100 border-0 rounded-4 shadow-sm p-4 text-center story-value-card" style="background: #FFFFFF; border: 1px solid var(--nn-card-border) !important;">
+                    <div class="contact-icon-box mx-auto mb-3" style="width: 64px; height: 64px;">
+                        <i class="bi bi-cake2 fs-2" style="color: var(--nn-deep-rose);"></i>
+                    </div>
+                    <h4 class="font-serif fw-bold mb-2" style="color: var(--nn-plum-text);">Cheese & Matcha Kem Trứng</h4>
+                    <p class="text-secondary small mb-3" style="line-height: 1.7;">
+                        Lớp Macchiato phô mai béo mặn sánh mịn đánh bông tươi mỗi sáng kết hợp bột Matcha Uji Kyoto và cốt trà nướng đậm đà.
+                    </p>
+                    <div class="mt-auto">
+                        <a asp-controller="Product" asp-action="Menu" asp-route-category="Cheese & Matcha" class="btn btn-sm btn-outline-danger rounded-pill px-4 py-1.5 fw-semibold">
+                            Xem 5 món <i class="bi bi-chevron-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dòng 3: Topping Nấu Mới & Trà Trái Cây -->
+            <div class="col-md-4">
+                <div class="card h-100 border-0 rounded-4 shadow-sm p-4 text-center story-value-card" style="background: #FFFFFF; border: 1px solid var(--nn-card-border) !important;">
+                    <div class="contact-icon-box mx-auto mb-3" style="width: 64px; height: 64px;">
+                        <i class="bi bi-flower1 fs-2" style="color: var(--nn-deep-rose);"></i>
+                    </div>
+                    <h4 class="font-serif fw-bold mb-2" style="color: var(--nn-plum-text);">Topping & Món Tươi Mát</h4>
+                    <p class="text-secondary small mb-3" style="line-height: 1.7;">
+                        Trân châu đường đen mật mía dẻo dai, trân châu trắng 3Q giòn sần sật và pudding trứng béo mịn tan ngay nơi đầu lưỡi.
+                    </p>
+                    <div class="mt-auto">
+                        <a asp-controller="Product" asp-action="Menu" asp-route-category="Topping & Món Khác" class="btn btn-sm btn-outline-danger rounded-pill px-4 py-1.5 fw-semibold">
+                            Xem Topping <i class="bi bi-chevron-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================================================
+     SECTION 3: CAM KẾT CHẤT LƯỢNG NGUYÊN LIỆU (3 GIÁ TRỊ VÀNG)
+     ========================================================================== -->
+<div class="container my-5 py-4">
+    <div class="text-center mb-5">
+        <span class="badge rounded-pill px-3 py-1 text-uppercase mb-2" style="background-color: var(--nn-soft-pink); color: var(--nn-deep-rose); font-weight: 700; font-size: 0.75rem; letter-spacing: 1.5px;">
+            Chất Lượng Thật
+        </span>
+        <h2 class="display-6 font-serif fw-bold" style="color: var(--nn-plum-text);">Bí Quyết Tạo Nên Ly Trà Sữa Đậm Hương</h2>
+        <div class="sakura-divider"></div>
+        <p class="text-secondary mx-auto mb-0" style="max-width: 650px;">
+            Tại TN Tea, chúng tôi trung thực với từng nguyên liệu để mỗi ngụm trà trao tay bạn luôn trọn vẹn sự thanh mát và an tâm tuyệt đối.
+        </p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 border-0 rounded-4 shadow-sm p-4 text-center story-value-card">
+                <div class="value-icon-wrapper mx-auto mb-3">
+                    <img src="~/images/story-la-tra-thuong-hang.png" alt="Lá Trà Thượng Hạng" class="story-value-img" />
+                </div>
+                <h4 class="font-serif fw-bold mb-2" style="color: var(--nn-plum-text);">Lá Trà Mộc Cao Nguyên</h4>
+                <p class="text-secondary small mb-0" style="line-height: 1.8;">
+                    Tuyển chọn những búp trà tươi 1 tôm 2 lá từ đồn điền cao nguyên mát lành, sao nướng thủ công lưu giữ trọn vẹn tinh dầu tự nhiên.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 border-0 rounded-4 shadow-sm p-4 text-center story-value-card">
+                <div class="value-icon-wrapper mx-auto mb-3">
+                    <img src="~/images/story-hoa-tinh-khiet.png" alt="100% Sữa Tươi Thanh Trùng" class="story-value-img" />
+                </div>
+                <h4 class="font-serif fw-bold mb-2" style="color: var(--nn-plum-text);">100% Sữa Tươi Thanh Trùng</h4>
+                <p class="text-secondary small mb-0" style="line-height: 1.8;">
+                    Nói không với bột béo công nghiệp, TN Tea sử dụng sữa tươi thanh trùng Đà Lạt mang lại vị ngọt êm dịu, nhẹ bụng và thơm mát.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 border-0 rounded-4 shadow-sm p-4 text-center story-value-card">
+                <div class="value-icon-wrapper mx-auto mb-3">
+                    <img src="~/images/story-tran-chau-nau-moi.png" alt="Trân Châu Nấu Mới Mỗi 4 Giờ" class="story-value-img" />
+                </div>
+                <h4 class="font-serif fw-bold mb-2" style="color: var(--nn-plum-text);">Trân Châu Nấu Mới Mỗi 4 Giờ</h4>
+                <p class="text-secondary small mb-0" style="line-height: 1.8;">
+                    Từng mẻ trân châu hoàng kim được nấu mới liên tục, ngào đượm mật mía đường đen tự nhiên cho độ dẻo giòn hoàn hảo.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================================================
+     SECTION 4: KHÔNG GIAN THƯỞNG TRÀ & CỬA HÀNG
+     ========================================================================== -->
+<div class="container my-5">
+    <div class="card border-0 rounded-4 shadow-sm overflow-hidden p-4 p-md-5 position-relative" style="background: linear-gradient(135deg, #FFF0F3 0%, #FFFFFF 100%); border: 1px solid var(--nn-card-border) !important;">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+                <span class="badge rounded-pill px-3 py-1 text-uppercase mb-2" style="background-color: var(--nn-soft-pink); color: var(--nn-deep-rose); font-weight: 700; font-size: 0.75rem; letter-spacing: 1.5px;">
+                    Không Gian Sakura Pastel
+                </span>
+                <h2 class="display-6 font-serif fw-bold mb-3" style="color: var(--nn-plum-text);">
+                    Ghé Thăm Cửa Hàng TN Tea
+                </h2>
+                <p class="text-secondary mb-3" style="line-height: 1.8;">
+                    Một chốn dừng chân bình yên được thiết kế với tông hồng Sakura dịu mát, ngát hương trà mộc thoang thoảng. Nơi lý tưởng để bạn làm việc, học tập hay hàn huyên cùng bạn bè thân thiết.
+                </p>
+                <div class="p-3 bg-white rounded-3 mb-4 shadow-sm border border-light">
+                    <p class="mb-1 text-dark small">
+                        <i class="bi bi-geo-alt-fill text-danger me-2"></i>
+                        <strong>Địa chỉ:</strong> Đỗ Mười/331A-331B An Phú Đông 10, An Phú Đông, TP. Hồ Chí Minh
+                    </p>
+                    <p class="mb-0 text-dark small">
+                        <i class="bi bi-clock-fill text-danger me-2"></i>
+                        <strong>Giờ mở cửa:</strong> 08:00 - 22:30 (Thứ Hai - Chủ Nhật) • Hotline: <strong>1900 6868</strong>
+                    </p>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                    <a asp-controller="Home" asp-action="Contact" class="btn btn-sakura-primary rounded-pill px-4 py-2.5 fw-semibold shadow-sm">
+                        <i class="bi bi-geo-fill me-1"></i> Xem Bản Đồ Chỉ Đường
+                    </a>
+                    <a asp-controller="Home" asp-action="Story" class="btn btn-outline-danger rounded-pill px-4 py-2.5 fw-semibold">
+                        <i class="bi bi-book-half me-1"></i> Chuyện TN Tea
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-5 text-center">
+                <div class="position-relative d-inline-block shadow-sm rounded-4 overflow-hidden border" style="border-color: #F8D7DC !important; max-width: 100%;">
+                    <img src="~/images/ch.jpg" alt="Không gian cửa hàng TN Tea" class="img-fluid rounded-4" style="max-height: 320px; width: 100%; object-fit: cover;" 
+                         onerror="this.src='https://placehold.co/500x350/FDE8EA/4A202A?text=TN+Tea+Store';" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================================================
+     SECTION 5: ĐÁNH GIÁ TỪ KHÁCH HÀNG THÂN THIẾT
+     ========================================================================== -->
+<div class="py-5" style="background: #FFFFFF;">
+    <div class="container my-3">
+        <div class="text-center mb-5">
+            <span class="badge rounded-pill px-3 py-1 text-uppercase mb-2" style="background-color: var(--nn-soft-pink); color: var(--nn-deep-rose); font-weight: 700; font-size: 0.75rem; letter-spacing: 1.5px;">
+                Tín Đồ Trà Sữa
+            </span>
+            <h2 class="display-6 font-serif fw-bold" style="color: var(--nn-plum-text);">Khách Hàng Nói Gì Về TN Tea?</h2>
+            <div class="sakura-divider"></div>
+            <p class="text-secondary mx-auto mb-0" style="max-width: 600px;">
+                Niềm vui lớn nhất của TN Tea là được đồng hành cùng những nụ cười và sự hài lòng của bạn qua từng ly trà sữa.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 rounded-4 shadow-sm p-4" style="background: #FFF8F9; border: 1px solid var(--nn-card-border) !important;">
+                    <div class="text-warning mb-2">
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                    </div>
+                    <p class="text-secondary small mb-3" style="line-height: 1.7; font-style: italic;">
+                        "Trà sữa ở đây thơm nồng mùi trà mộc tự nhiên, uống rất thanh mà không hề bị gắt cổ hay ngọt ngấy như các chỗ dùng bột béo. Trân châu dai giòn siêu ưng!"
+                    </p>
+                    <div class="d-flex align-items-center gap-2 mt-auto">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold small" style="width: 38px; height: 38px; background: #EE8698;">
+                            HM
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-0 small" style="color: var(--nn-plum-text);">Hoàng My</h6>
+                            <small class="text-muted" style="font-size: 0.75rem;">Khách hàng thân thiết</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 rounded-4 shadow-sm p-4" style="background: #FFF8F9; border: 1px solid var(--nn-card-border) !important;">
+                    <div class="text-warning mb-2">
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                    </div>
+                    <p class="text-secondary small mb-3" style="line-height: 1.7; font-style: italic;">
+                        "Dòng Trà Sữa Oolong Nướng Cheese Kem Trứng đúng là chân ái! Lớp kem cheese béo mằn mặn đặc quánh kết hợp hậu vị trà nướng thơm lừng cực kỳ cuốn hút."
+                    </p>
+                    <div class="d-flex align-items-center gap-2 mt-auto">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold small" style="width: 38px; height: 38px; background: #D25C70;">
+                            TT
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-0 small" style="color: var(--nn-plum-text);">Thanh Tùng</h6>
+                            <small class="text-muted" style="font-size: 0.75rem;">Tín đồ Oolong Cheese</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 rounded-4 shadow-sm p-4" style="background: #FFF8F9; border: 1px solid var(--nn-card-border) !important;">
+                    <div class="text-warning mb-2">
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                    </div>
+                    <p class="text-secondary small mb-3" style="line-height: 1.7; font-style: italic;">
+                        "Cửa hàng trang trí phong cách Sakura pastel rất xinh, nhân viên dễ thương. Đặt online giao hàng cũng rất nhanh, ly giữ đá tốt không bị nhạt trà."
+                    </p>
+                    <div class="d-flex align-items-center gap-2 mt-auto">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold small" style="width: 38px; height: 38px; background: #E87A90;">
+                            TV
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-0 small" style="color: var(--nn-plum-text);">Thảo Vy</h6>
+                            <small class="text-muted" style="font-size: 0.75rem;">Khách hàng trực tuyến</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const track = document.getElementById('bestsellerTrack');
+            const btnPrev = document.getElementById('btnPrevBestSeller');
+            const btnNext = document.getElementById('btnNextBestSeller');
+
+            function getScrollAmount() {
+                const card = track ? track.querySelector('.bestseller-card-col') : null;
+                return card ? (card.offsetWidth + 24) : 300;
+            }
+
+            if (track && btnNext) {
+                btnNext.addEventListener('click', function () {
+                    track.scrollBy({ left: getScrollAmount(), behavior: 'smooth' });
+                });
+            }
+
+            if (track && btnPrev) {
+                btnPrev.addEventListener('click', function () {
+                    track.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' });
+                });
+            }
+
+            // Kéo chuột qua trái/phải để xem tiếp các món (Mouse drag)
+            if (track) {
+                let isDown = false;
+                let startX = 0;
+                let scrollLeft = 0;
+                let hasDragged = false;
+
+                track.addEventListener('mousedown', (e) => {
+                    isDown = true;
+                    hasDragged = false;
+                    track.classList.add('grabbing');
+                    startX = e.pageX - track.offsetLeft;
+                    scrollLeft = track.scrollLeft;
+                });
+
+                track.addEventListener('mouseleave', () => {
+                    isDown = false;
+                    track.classList.remove('grabbing');
+                });
+
+                track.addEventListener('mouseup', () => {
+                    isDown = false;
+                    track.classList.remove('grabbing');
+                    setTimeout(() => { hasDragged = false; }, 60);
+                });
+
+                track.addEventListener('mousemove', (e) => {
+                    if (!isDown) return;
+                    e.preventDefault();
+                    const x = e.pageX - track.offsetLeft;
+                    const walk = (x - startX) * 1.3;
+                    if (Math.abs(walk) > 5) {
+                        hasDragged = true;
+                    }
+                    track.scrollLeft = scrollLeft - walk;
+                });
+
+                // Chặn mở link nếu người dùng đang thao tác kéo chuột
+                track.addEventListener('click', (e) => {
+                    if (hasDragged) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        hasDragged = false;
+                    }
+                }, true);
+            }
+        });
+    </script>
+}

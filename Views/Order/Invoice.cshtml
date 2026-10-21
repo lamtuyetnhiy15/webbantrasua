@@ -7,14 +7,25 @@
 <div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-lg-9">
-            <!-- Thông báo thành công -->
-            <div class="alert alert-success d-flex align-items-center rounded-4 p-3 mb-4 shadow-sm border-0" role="alert" style="background-color: #E2F7E9; color: #1B5E20;">
-                <i class="bi bi-check-circle-fill fs-2 me-3 text-success"></i>
-                <div>
+            <!-- Thông báo thành công (tự động biến mất sau 5s) -->
+            <div id="paymentSuccessAlert" class="alert alert-success alert-dismissible fade show d-flex align-items-center rounded-4 p-3 mb-4 shadow-sm border-0 position-relative" role="alert" style="background-color: #E2F7E9; color: #1B5E20; overflow: hidden; transition: opacity 0.6s ease, max-height 0.6s ease, margin 0.6s ease, padding 0.6s ease;">
+                <i class="bi bi-check-circle-fill fs-2 me-3 text-success flex-shrink-0"></i>
+                <div class="flex-grow-1">
                     <h5 class="alert-heading fw-bold mb-1">Thanh toán đơn hàng thành công!</h5>
                     <p class="mb-0 small">Cảm ơn bạn đã lựa chọn TN Tea. Đơn hàng đang được chuẩn bị và sẽ sớm được giao tới bạn.</p>
                 </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <!-- Thanh hiệu ứng thời gian 5s -->
+                <div style="position: absolute; bottom: 0; left: 0; height: 3px; background-color: #2e7d32; width: 100%; animation: dismissCountdown 5s linear forwards; border-radius: 0 0 16px 16px;"></div>
             </div>
+
+            <style>
+                @@keyframes dismissCountdown {
+                    0% { width: 100%; opacity: 1; }
+                    95% { width: 0%; opacity: 1; }
+                    100% { width: 0%; opacity: 0; }
+                }
+            </style>
 
             <!-- Thẻ Hóa đơn -->
             <div class="card sakura-card p-4 p-md-5">
@@ -118,3 +129,39 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        function initAutoDismiss() {
+            const successAlert = document.getElementById('paymentSuccessAlert');
+            if (successAlert) {
+                setTimeout(function () {
+                    successAlert.style.opacity = '0';
+                    successAlert.style.maxHeight = '0px';
+                    successAlert.style.marginTop = '0px';
+                    successAlert.style.marginBottom = '0px';
+                    successAlert.style.paddingTop = '0px';
+                    successAlert.style.paddingBottom = '0px';
+                    setTimeout(function () {
+                        if (typeof bootstrap !== 'undefined' && bootstrap.Alert) {
+                            try {
+                                const bsAlert = bootstrap.Alert.getOrCreateInstance(successAlert);
+                                bsAlert.close();
+                            } catch (e) {
+                                successAlert.remove();
+                            }
+                        } else {
+                            successAlert.remove();
+                        }
+                    }, 600);
+                }, 5000); // Tự động đóng sau 5 giây
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initAutoDismiss);
+        } else {
+            initAutoDismiss();
+        }
+    </script>
+}

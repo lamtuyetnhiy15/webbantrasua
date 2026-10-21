@@ -185,4 +185,16 @@ document.addEventListener("DOMContentLoaded", function () {
             form.submit();
         });
     });
+
+    // Ghim Header cố định khi cuộn trang (Sticky Header & hiệu ứng bóng đổ khi cuộn)
+    const headerEl = document.querySelector('header.sticky-top') || document.querySelector('header');
+    if (headerEl) {
+        window.addEventListener('scroll', function () {
+            if (window.scrollY > 15) {
+                headerEl.classList.add('navbar-scrolled');
+            } else {
+                headerEl.classList.remove('navbar-scrolled');
+            }
+        }, { passive: true });
+    }
 });

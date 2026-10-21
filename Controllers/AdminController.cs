@@ -86,37 +86,48 @@ namespace WebTraSua.Controllers
 
             if (ModelState.IsValid)
             {
-                // Xử lý upload ảnh nếu có
-                if (imageUpload != null && imageUpload.Length > 0)
+                try
                 {
-                    var fileName = Guid.NewGuid().ToString("N") + Path.GetExtension(imageUpload.FileName);
-                    var imagesFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
-                    if (!Directory.Exists(imagesFolder)) Directory.CreateDirectory(imagesFolder);
-                    var filePath = Path.Combine(imagesFolder, fileName);
-                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    // Xử lý upload ảnh nếu có
+                    if (imageUpload != null && imageUpload.Length > 0)
                     {
-                        await imageUpload.CopyToAsync(stream);
+                        var fileName = Guid.NewGuid().ToString("N") + Path.GetExtension(imageUpload.FileName);
+                        var imagesFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+                        if (!Directory.Exists(imagesFolder)) Directory.CreateDirectory(imagesFolder);
+                        var filePath = Path.Combine(imagesFolder, fileName);
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await imageUpload.CopyToAsync(stream);
+                        }
+                        product.ImageUrl = "/images/" + fileName;
                     }
-                    product.ImageUrl = "/images/" + fileName;
+                    else if (string.IsNullOrWhiteSpace(product.ImageUrl))
+                    {
+                        product.ImageUrl = "https://images.unsplash.com/photo-1558857563-b37df35d1f86?w=600&auto=format&fit=crop&q=80";
+                    }
+
+                    product.Name = product.Name.Trim();
+                    product.Description = product.Description?.Trim() ?? string.Empty;
+                    product.Category = string.IsNullOrWhiteSpace(product.Category) ? "Trà Sữa Đậm Hương" : product.Category.Trim();
+                    product.Badge = string.IsNullOrWhiteSpace(product.Badge) ? null : product.Badge.Trim();
+
+                    // Tự động thêm vào bảng Categories nếu chưa có (so sánh chuẩn tiếng Việt không phụ thuộc lower() của SQLite)
+                    var allCategories = await _context.Categories.ToListAsync();
+                    if (!allCategories.Any(c => string.Equals(c.Name.Trim(), product.Category, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        _context.Categories.Add(new Category { Name = product.Category });
+                    }
+
+                    _context.Products.Add(product);
+                    await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = $"Đã thêm thành công món \"{product.Name}\" vào Menu TN Tea!";
+                    return RedirectToAction(nameof(Products));
                 }
-                else if (string.IsNullOrWhiteSpace(product.ImageUrl))
+                catch (Exception ex)
                 {
-                    product.ImageUrl = "https://images.unsplash.com/photo-1558857563-b37df35d1f86?w=600&auto=format&fit=crop&q=80";
+                    var innerMsg = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                    ModelState.AddModelError(string.Empty, "Lỗi khi lưu dữ liệu: " + innerMsg);
                 }
-
-                product.Category = string.IsNullOrWhiteSpace(product.Category) ? "Trà Sữa Đậm Hương" : product.Category.Trim();
-                product.Badge = string.IsNullOrWhiteSpace(product.Badge) ? null : product.Badge.Trim();
-
-                // Tự động thêm vào bảng Categories nếu chưa có
-                if (!await _context.Categories.AnyAsync(c => c.Name.ToLower() == product.Category.ToLower()))
-                {
-                    _context.Categories.Add(new Category { Name = product.Category });
-                }
-
-                _context.Products.Add(product);
-                await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = $"Đã thêm thành công món \"{product.Name}\" vào Menu TN Tea!";
-                return RedirectToAction(nameof(Products));
             }
 
             await LoadCategoriesToViewBagAsync();
@@ -170,7 +181,7 @@ namespace WebTraSua.Controllers
                     existing.Price = product.Price;
                     existing.Category = string.IsNullOrWhiteSpace(product.Category) ? "Trà Sữa Đậm Hương" : product.Category.Trim();
                     existing.Badge = string.IsNullOrWhiteSpace(product.Badge) ? null : product.Badge.Trim();
-                    existing.Description = product.Description;
+                    existing.Description = product.Description?.Trim() ?? string.Empty;
 
                     // Nếu có tải ảnh mới lên
                     if (imageUpload != null && imageUpload.Length > 0)
@@ -185,9 +196,14 @@ namespace WebTraSua.Controllers
                         }
                         existing.ImageUrl = "/images/" + fileName;
                     }
+                    else if (!string.IsNullOrWhiteSpace(product.ImageUrl))
+                    {
+                        existing.ImageUrl = product.ImageUrl.Trim();
+                    }
 
-                    // Tự động thêm vào bảng Categories nếu chưa có
-                    if (!await _context.Categories.AnyAsync(c => c.Name.ToLower() == existing.Category.ToLower()))
+                    // Tự động thêm vào bảng Categories nếu chưa có (so sánh chuẩn tiếng Việt không phụ thuộc lower() của SQLite)
+                    var allCategories = await _context.Categories.ToListAsync();
+                    if (!allCategories.Any(c => string.Equals(c.Name.Trim(), existing.Category, StringComparison.OrdinalIgnoreCase)))
                     {
                         _context.Categories.Add(new Category { Name = existing.Category });
                     }
@@ -198,7 +214,8 @@ namespace WebTraSua.Controllers
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError(string.Empty, "Lỗi khi lưu dữ liệu: " + ex.Message);
+                    var innerMsg = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                    ModelState.AddModelError(string.Empty, "Lỗi khi lưu dữ liệu: " + innerMsg);
                 }
             }
 
@@ -224,7 +241,8 @@ namespace WebTraSua.Controllers
             }
 
             var trimmedName = dto.Name.Trim();
-            var exists = await _context.Categories.AnyAsync(c => c.Name.ToLower() == trimmedName.ToLower());
+            var allCategories = await _context.Categories.ToListAsync();
+            var exists = allCategories.Any(c => string.Equals(c.Name.Trim(), trimmedName, StringComparison.OrdinalIgnoreCase));
             if (exists)
             {
                 return Json(new { success = false, message = "Mục lục này đã tồn tại." });
@@ -253,6 +271,12 @@ namespace WebTraSua.Controllers
 
             var oldName = cat.Name;
             var newName = dto.NewName.Trim();
+
+            var allCategories = await _context.Categories.ToListAsync();
+            if (allCategories.Any(c => c.Id != dto.Id && string.Equals(c.Name.Trim(), newName, StringComparison.OrdinalIgnoreCase)))
+            {
+                return Json(new { success = false, message = "Mục lục với tên này đã tồn tại." });
+            }
 
             // Cập nhật tên mục lục
             cat.Name = newName;

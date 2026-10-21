@@ -202,31 +202,61 @@
                         Khơi nguồn cảm hứng từ các loài hoa tinh khiết, kết hợp cùng vị dịu nhẹ của trà sữa tươi lá cao cấp, TN Tea không chỉ mang đến nhiều tầng đặc biệt là sự thư giãn, góp phần tìm lại bình yên giữa bộn bề của cuộc sống.
                     </p>
                     <div class="d-flex gap-3 fs-5" style="color: var(--nn-deep-rose);">
-                        <a href="#" class="text-reset"><i class="bi bi-facebook"></i></a>
-                        <a href="#" class="text-reset"><i class="bi bi-instagram"></i></a>
-                        <a href="#" class="text-reset"><i class="bi bi-tiktok"></i></a>
+                        <a href="https://www.facebook.com/profile.php?id=61595837752936" target="_blank" rel="noopener noreferrer" class="text-reset" title="Facebook TN Tea"><i class="bi bi-facebook"></i></a>
+                        <a href="https://www.tiktok.com/@@tn.tea6?lang=vi-VN" target="_blank" rel="noopener noreferrer" class="text-reset" title="TikTok TN Tea"><i class="bi bi-tiktok"></i></a>
                     </div>
                 </div>
                 <div class="col-6 col-md-3">
                     <h6 class="fw-bold text-uppercase mb-3" style="letter-spacing: 1px;">Menu</h6>
-                    <ul class="list-unstyled small d-flex flex-column gap-2 text-secondary">
-                        <li><a href="#menu" class="text-decoration-none text-reset">Trà Sữa Đậm Hương</a></li>
-                        <li><a href="#menu" class="text-decoration-none text-reset">Trà Sữa Truyền Thống</a></li>
-                        <li><a href="#menu" class="text-decoration-none text-reset">Topping Trân Châu Hoàng Gia</a></li>
-                        <li><a href="#menu" class="text-decoration-none text-reset">Cheese Kem Trứng Nướng</a></li>
+                    <ul class="list-unstyled small d-flex flex-column gap-2 text-secondary footer-cat-menu">
+                        <li>
+                            <a asp-controller="Product" asp-action="Menu" asp-route-category="Trà Sữa Đậm Hương" class="text-decoration-none text-reset footer-menu-link">
+                                Trà Sữa Đậm Hương
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-controller="Product" asp-action="Menu" asp-route-category="Trà Sữa Truyền Thống" class="text-decoration-none text-reset footer-menu-link">
+                                Trà Sữa Truyền Thống
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-controller="Product" asp-action="Menu" asp-route-category="Topping & Món Khác" class="text-decoration-none text-reset footer-menu-link">
+                                Topping Trân Châu Hoàng Gia
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-controller="Product" asp-action="Menu" asp-route-category="Cheese & Matcha" class="text-decoration-none text-reset footer-menu-link">
+                                Cheese Kem Trứng Nướng
+                            </a>
+                        </li>
                     </ul>
                 </div>
                 <div class="col-6 col-md-4">
                     <h6 class="fw-bold text-uppercase mb-3" style="letter-spacing: 1px;">Liên Hệ & Cửa Hàng</h6>
                     <ul class="list-unstyled small d-flex flex-column gap-2 text-secondary">
-                        <li><i class="bi bi-geo-alt-fill text-danger me-2"></i>123 Phố Trà Sữa, Quận 1, TP. Hồ Chí Minh</li>
+                        <li><i class="bi bi-geo-alt-fill text-danger me-2"></i>Đỗ Mười/331A-331B An Phú Đông 10, An Phú Đông, TP. Hồ Chí Minh</li>
                         <li><i class="bi bi-telephone-fill text-danger me-2"></i>Hotline: 1900 6868 (8:00 - 22:30)</li>
-                        <li><i class="bi bi-envelope-fill text-danger me-2"></i>contact@tntea.vn</li>
+                        <li><i class="bi bi-envelope-fill text-danger me-2"></i>2400001956@nttu.edu.vn</li>
                     </ul>
                 </div>
             </div>
-            <div class="border-top mt-4 pt-3 text-center small text-muted">
+            <div class="border-top mt-4 pt-3 pb-3 text-center text-secondary small">
                 &copy; @DateTime.Now.Year TN Tea - Trà Sữa Đậm Vị Tình Thân. Bản quyền thuộc về thương hiệu TN Tea.
+            </div>
+        </div>
+
+        <!-- Dải Băng Thông Tin Môn Học & Sinh Viên Tràn Toàn Chiều Ngang -->
+        <div class="footer-credit-strip text-center">
+            <div class="container py-2">
+                <div class="fw-bold text-uppercase mb-1" style="color: #F8B4BF; font-size: 0.85rem; letter-spacing: 2px;">
+                    MÔN: LẬP TRÌNH WEB
+                </div>
+                <div class="fw-bold fs-6 mb-1 text-white" style="letter-spacing: 0.5px;">
+                    Lam Tuyết Nhi
+                </div>
+                <div class="small mb-0" style="color: #E2CFD4;">
+                    Lớp: <span class="fw-bold text-white">24DTMDT1B</span>
+                </div>
             </div>
         </div>
     </footer>

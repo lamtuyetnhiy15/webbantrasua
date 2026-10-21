@@ -47,6 +47,14 @@
     var currentCatKey = selectedCat;
     var currentCat = categories.FirstOrDefault(c => 
         string.Equals(c.Key, currentCatKey, StringComparison.OrdinalIgnoreCase) ||
+        (currentCatKey.Contains("Đậm Hương", StringComparison.OrdinalIgnoreCase) && c.Name.Contains("Đậm Hương", StringComparison.OrdinalIgnoreCase)) ||
+        (currentCatKey.Contains("Truyền Thống", StringComparison.OrdinalIgnoreCase) && c.Name.Contains("Truyền Thống", StringComparison.OrdinalIgnoreCase)) ||
+        (currentCatKey.Contains("Cheese", StringComparison.OrdinalIgnoreCase) && c.Name.Contains("Cheese", StringComparison.OrdinalIgnoreCase)) ||
+        (currentCatKey.Contains("Kem Trứng", StringComparison.OrdinalIgnoreCase) && c.Name.Contains("Cheese", StringComparison.OrdinalIgnoreCase)) ||
+        (currentCatKey.Contains("Matcha", StringComparison.OrdinalIgnoreCase) && c.Name.Contains("Cheese", StringComparison.OrdinalIgnoreCase)) ||
+        (currentCatKey.Contains("Trái Cây", StringComparison.OrdinalIgnoreCase) && c.Name.Contains("Trái Cây", StringComparison.OrdinalIgnoreCase)) ||
+        (currentCatKey.Contains("Topping", StringComparison.OrdinalIgnoreCase) && c.Name.Contains("Topping", StringComparison.OrdinalIgnoreCase)) ||
+        (currentCatKey.Contains("Trân Châu", StringComparison.OrdinalIgnoreCase) && c.Name.Contains("Topping", StringComparison.OrdinalIgnoreCase)) ||
         (currentCatKey == "trasua" && c.Name.Contains("Đậm Hương", StringComparison.OrdinalIgnoreCase)) ||
         (currentCatKey == "damhuong" && c.Name.Contains("Đậm Hương", StringComparison.OrdinalIgnoreCase)) ||
         (currentCatKey == "truyenthong" && c.Name.Contains("Truyền Thống", StringComparison.OrdinalIgnoreCase)) ||
@@ -55,6 +63,7 @@
         (currentCatKey == "topping" && c.Name.Contains("Topping", StringComparison.OrdinalIgnoreCase))
     );
     var currentCatName = !string.IsNullOrEmpty(currentCat.Name) ? currentCat.Name : "Tất Cả Sản Phẩm";
+    var currentResolvedKey = !string.IsNullOrEmpty(currentCat.Key) ? currentCat.Key : currentCatKey;
 }
 
 <div class="menu-hero-section position-relative overflow-hidden mb-4">
@@ -117,7 +126,7 @@
                 <li><hr class="dropdown-divider my-1"></li>
                 @foreach (var cat in categories)
                 {
-                    var isActive = (currentCatKey == cat.Key);
+                    var isActive = (currentResolvedKey == cat.Key || currentCatKey == cat.Key);
                     <li>
                         <a class="dropdown-item rounded-3 py-1.5 px-2.5 fw-semibold d-flex align-items-center justify-content-between @(isActive ? "active-sakura" : "")" 
                            asp-action="Menu" asp-route-category="@cat.Key" asp-route-search="@searchTerm">

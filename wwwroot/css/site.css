@@ -23,6 +23,8 @@ html, body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow-x: clip; /* clip ngăn chặn thanh cuộn ngang mà không phá vỡ position: sticky */
+    max-width: 100%;
 }
 
 main {
@@ -35,8 +37,16 @@ main {
 }
 
 /* ==========================================================================
-   NAVBAR & HEADER THEME (Giống VV.png)
+   NAVBAR & HEADER THEME (Giống VV.png) - GHIM CỐ ĐỊNH KHI CUỘN (STICKY HEADER)
    ========================================================================== */
+header.sticky-top {
+    position: -webkit-sticky !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1040 !important;
+    width: 100%;
+}
+
 .navbar-nn-sakura {
     background: linear-gradient(180deg, rgba(244, 166, 178, 0.95) 0%, rgba(247, 192, 200, 0.92) 100%);
     backdrop-filter: blur(10px);
@@ -44,6 +54,12 @@ main {
     box-shadow: 0 4px 20px rgba(122, 78, 88, 0.08);
     padding: 0.85rem 0;
     transition: all 0.3s ease;
+}
+
+header.sticky-top.navbar-scrolled .navbar-nn-sakura {
+    background: linear-gradient(180deg, rgba(244, 166, 178, 0.98) 0%, rgba(247, 192, 200, 0.96) 100%);
+    box-shadow: 0 6px 25px rgba(74, 32, 42, 0.16);
+    padding: 0.65rem 0;
 }
 
 .navbar-nn-sakura .navbar-brand {
@@ -601,8 +617,26 @@ main {
     background: linear-gradient(180deg, #FCE8EB 0%, #F8D7DA 100%);
     border-top: 1px solid var(--nn-card-border);
     color: var(--nn-plum-text);
-    padding: 3rem 0 2rem;
+    padding: 3rem 0 0; /* Để dải băng chạm đáy trang chuẩn như mẫu */
     margin-top: 5rem;
+}
+
+.footer-credit-strip {
+    background: #38151E; /* Tone mận trầm ấm tôn vinh thương hiệu & hài hòa với màu hoa Sakura */
+    color: #FFFFFF;
+    border-top: 1px solid rgba(244, 166, 178, 0.25);
+    padding: 1.15rem 0 1.25rem;
+}
+
+.footer-menu-link {
+    transition: color 0.25s ease, transform 0.25s ease;
+    display: inline-block;
+}
+
+.footer-menu-link:hover {
+    color: var(--nn-deep-rose) !important;
+    transform: translateX(5px);
+    font-weight: 600;
 }
 
 /* ==========================================================================
